@@ -741,6 +741,10 @@ public interface GTRecipeSchema {
             return this;
         }
 
+        public GTRecipeJS fluidInputs(GTRecipeComponents.FluidIngredientJS... inputs) {
+            return inputFluids(inputs);
+        }
+
         public GTRecipeJS inputFluids(GTRecipeComponents.FluidIngredientJS... inputs) {
             validateFluids("input", inputs);
 
@@ -765,6 +769,10 @@ public interface GTRecipeSchema {
             FluidStack stack = new FluidStack(input.getFluid(), (int) input.getAmount(), input.getNbt());
             return input(FluidRecipeCapability.CAP,
                     IntProviderFluidIngredient.of(FluidIngredient.of(stack), range));
+        }
+
+        public GTRecipeJS fluidOutputs(FluidStackJS... outputs) {
+            return outputFluids(outputs);
         }
 
         public GTRecipeJS outputFluids(FluidStackJS... outputs) {

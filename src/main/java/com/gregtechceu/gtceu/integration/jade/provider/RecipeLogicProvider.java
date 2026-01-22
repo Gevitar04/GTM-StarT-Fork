@@ -113,7 +113,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                         float minAmperage = (float) EUt / voltage;
 
                         text = Component
-                                .translatable("gtceu.jade.voltage_use",
+                                .translatable("gtceu.recipe.eu",
                                         FormattingUtil.formatNumbers(EUt))
                                 .withStyle(ChatFormatting.RED);
 
@@ -131,10 +131,10 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
 
                         }
 
-                        text.append(Component.translatable("gtceu.recipe.amp_notation",
+                        text.append(Component.translatable("gtceu.universal.padded_parentheses", (Component.translatable("gtceu.recipe.eu.amp_notation",
                                                 FormattingUtil.formatNumber2Places(minAmperage),
-                                                voltageTier)
-                                .withStyle(ChatFormatting.WHITE));
+                                                voltageTier))
+                                .withStyle(ChatFormatting.WHITE)));
                     }
 
                     if (isInput) {

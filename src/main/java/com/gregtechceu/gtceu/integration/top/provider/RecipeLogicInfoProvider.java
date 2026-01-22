@@ -78,7 +78,7 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
                             FormattingUtil.formatNumbers(EUt.getTotalEU()) + TextStyleClass.INFO)
                                 .withStyle(ChatFormatting.WHITE))
                             .append(Component.translatable("gtceu.universal.padded_parentheses",
-                                    (Component.translatable("gtceu.jage.amperage_use", minAmperage).withStyle(ChatFormatting.RED))
+                                    (Component.translatable("gtceu.jade.amperage_use", minAmperage).withStyle(ChatFormatting.RED))
                                     .append(Component.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN))
                                     .append(GTValues.VNF[tier])));
                 }

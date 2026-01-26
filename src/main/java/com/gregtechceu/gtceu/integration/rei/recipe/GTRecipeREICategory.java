@@ -11,7 +11,6 @@ import com.lowdragmc.lowdraglib.rei.IGui2Renderer;
 import com.lowdragmc.lowdraglib.rei.ModularUIDisplayCategory;
 import com.lowdragmc.lowdraglib.utils.Size;
 
-import dev.emi.emi.api.recipe.VanillaEmiRecipeCategories;
 import net.minecraft.Util;
 import net.minecraft.network.chat.Component;
 

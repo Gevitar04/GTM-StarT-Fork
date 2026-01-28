@@ -596,9 +596,10 @@ public class ConfigHolder {
         @Configurable
         @Configurable.Comment({
                 "Whether to add a parallel version of the LCR.",
-                "Default: false"
+                "Default: true"
         })
-        public boolean parallelLCR = false;
+        public boolean parallelLCR = true;
+
 
         @Configurable
         @Configurable.Comment("Whether the Drums can input fluids from the output side (bottom).")

@@ -43,6 +43,7 @@ import net.minecraft.world.level.block.DoorBlock;
 import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 import net.minecraftforge.client.model.generators.ConfiguredModel;
+import net.minecraftforge.data.loading.DatagenModLoader;
 
 import appeng.api.networking.pathing.ChannelMode;
 import appeng.core.AEConfig;
@@ -263,44 +264,46 @@ public class GTMultiMachines {
                     GTCEu.id("block/multiblock/large_chemical_reactor"))
             .register();
 
-    public static MultiblockMachineDefinition EXTREME_CHEMICAL_REACTOR = !ConfigHolder.INSTANCE.machines.parallelLCR ?
-            null : REGISTRATE
-                    .multiblock("extreme_chemical_reactor",
-                            ConfigHolder.INSTANCE.machines.lcrCoilBenefits ?
-                                    CoilWorkableElectricMultiblockMachine::new :
-                                    WorkableElectricMultiblockMachine::new)
-                    .conditionalTooltip(defaultEnvironmentRequirement(),
-                            ConfigHolder.INSTANCE.gameplay.environmentalHazards)
-                    .rotationState(RotationState.ALL)
-                    .recipeType(GTRecipeTypes.LARGE_CHEMICAL_RECIPES)
-                    .recipeModifiers(DEFAULT_ENVIRONMENT_REQUIREMENT, PARALLEL_HATCH,
-                            ConfigHolder.INSTANCE.machines.lcrCoilBenefits ? CHEMICAL_REACTOR_OVERCLOCK :
-                                    OC_PERFECT_SUBTICK,
-                            BATCH_MODE)
-                    .appearanceBlock(CASING_PTFE_INERT)
-                    .pattern(definition -> {
-                        var casing = blocks(CASING_PTFE_INERT.get()).setMinGlobalLimited(10);
-                        var abilities = autoAbilities(definition.getRecipeTypes())
-                                .or(autoAbilities(true, false, true));
+    public static MultiblockMachineDefinition EXTREME_CHEMICAL_REACTOR = (ConfigHolder.INSTANCE.machines.parallelLCR ||
+            DatagenModLoader.isRunningDataGen()) ?
+                    REGISTRATE
+                            .multiblock("extreme_chemical_reactor",
+                                    ConfigHolder.INSTANCE.machines.lcrCoilBenefits ?
+                                            CoilWorkableElectricMultiblockMachine::new :
+                                            WorkableElectricMultiblockMachine::new)
+                            .conditionalTooltip(defaultEnvironmentRequirement(),
+                                    ConfigHolder.INSTANCE.gameplay.environmentalHazards)
+                            .rotationState(RotationState.ALL)
+                            .recipeType(GTRecipeTypes.LARGE_CHEMICAL_RECIPES)
+                            .recipeModifiers(DEFAULT_ENVIRONMENT_REQUIREMENT, PARALLEL_HATCH,
+                                    ConfigHolder.INSTANCE.machines.lcrCoilBenefits ? CHEMICAL_REACTOR_OVERCLOCK :
+                                            OC_PERFECT_SUBTICK,
+                                    BATCH_MODE)
+                            .appearanceBlock(CASING_PTFE_INERT)
+                            .pattern(definition -> {
+                                var casing = blocks(CASING_PTFE_INERT.get()).setMinGlobalLimited(10);
+                                var abilities = autoAbilities(definition.getRecipeTypes())
+                                        .or(autoAbilities(true, false, true));
 
-                        return FactoryBlockPattern.start()
-                                .aisle("ABBBA", "CAAAC", "AADAA", "CAAAC", "ABBBA")
-                                .aisle("BAAAB", "AE EA", "AE EA", "AE EA", "BAAAB")
-                                .aisle("BAAAB", "A E A", "D E D", "A E A", "BAAAB")
-                                .aisle("BAAAB", "AE EA", "AE EA", "AE EA", "BAAAB")
-                                .aisle("ABBBA", "CAAAC", "AA@AA", "CAAAC", "ABBBA")
-                                .where('A', casing.or(abilities))
-                                .where('B', blocks(GCYMBlocks.HEAT_VENT.get()))
-                                .where('C', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, BlackSteel)))
-                                .where('D', heatingCoils())
-                                .where('E', blocks(CASING_POLYTETRAFLUOROETHYLENE_PIPE.get()))
-                                .where(' ', air())
-                                .where('@', controller(blocks(definition.getBlock())))
-                                .build();
-                    })
-                    .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_inert_ptfe"),
-                            GTCEu.id("block/multiblock/large_chemical_reactor"))
-                    .register();
+                                return FactoryBlockPattern.start()
+                                        .aisle("ABBBA", "CAAAC", "AADAA", "CAAAC", "ABBBA")
+                                        .aisle("BAAAB", "AE EA", "AE EA", "AE EA", "BAAAB")
+                                        .aisle("BAAAB", "A E A", "D E D", "A E A", "BAAAB")
+                                        .aisle("BAAAB", "AE EA", "AE EA", "AE EA", "BAAAB")
+                                        .aisle("ABBBA", "CAAAC", "AA@AA", "CAAAC", "ABBBA")
+                                        .where('A', casing.or(abilities))
+                                        .where('B', blocks(GCYMBlocks.HEAT_VENT.get()))
+                                        .where('C', blocks(ChemicalHelper.getBlock(TagPrefix.frameGt, BlackSteel)))
+                                        .where('D', heatingCoils())
+                                        .where('E', blocks(CASING_POLYTETRAFLUOROETHYLENE_PIPE.get()))
+                                        .where(' ', air())
+                                        .where('@', controller(blocks(definition.getBlock())))
+                                        .build();
+                            })
+                            .workableCasingModel(GTCEu.id("block/casings/solid/machine_casing_inert_ptfe"),
+                                    GTCEu.id("block/multiblock/large_chemical_reactor"))
+                            .register() :
+                    null;
 
     public static final MultiblockMachineDefinition IMPLOSION_COMPRESSOR = REGISTRATE
             .multiblock("implosion_compressor", WorkableElectricMultiblockMachine::new)

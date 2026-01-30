@@ -109,8 +109,7 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                         text = Component.translatable("gtceu.jade.fluid_use", FormattingUtil.formatNumbers(EUt))
                                 .withStyle(ChatFormatting.GREEN);
                     } else {
-                        // var voltage = recipeInfo.getLong("voltage");
-                        byte tier = GTUtil.getTierByVoltage(EUt);
+                        var tier = GTUtil.getTierByVoltage(EUt);
                         float minAmperage = (float) EUt / GTValues.V[tier];
 
                         text = Component
@@ -119,11 +118,13 @@ public class RecipeLogicProvider extends CapabilityBlockProvider<RecipeLogic> {
                                 .withStyle(ChatFormatting.RED);
 
                         MutableComponent voltageTier;
-                        if (tier < GTValues.TIER_COUNT) {
+                        if (tier < GTValues.TIER_COUNT - 1) {
                             voltageTier = Component.literal(GTValues.VNF[tier])
                                     .withStyle(style -> style.withColor(GTValues.VC[tier]));
                         } else {
-                            int speed = Mth.clamp(tier - GTValues.TIER_COUNT - 1, 0, GTValues.TIER_COUNT);
+                            int calculatedSpeed = Mth.ceil(Math.log((double) EUt / GTValues.V[GTValues.MAX]) / Math.log(4));
+                            int speed = Mth.clamp(calculatedSpeed, 0, GTValues.TIER_COUNT);
+                            minAmperage = (float) (minAmperage / Math.pow(4, speed));
                             voltageTier = Component.literal("MAX")
                                     .withStyle(style -> style.withColor(TooltipHelper.rainbowColor(speed)))
                                     .append(Component.literal("+")

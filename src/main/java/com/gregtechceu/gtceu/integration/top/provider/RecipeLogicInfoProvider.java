@@ -8,6 +8,7 @@ import com.gregtechceu.gtceu.api.machine.steam.SimpleSteamMachine;
 import com.gregtechceu.gtceu.api.machine.steam.SteamMachine;
 import com.gregtechceu.gtceu.api.machine.trait.RecipeLogic;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
+import com.gregtechceu.gtceu.client.util.TooltipHelper;
 import com.gregtechceu.gtceu.common.machine.multiblock.steam.SteamParallelMultiblockMachine;
 import com.gregtechceu.gtceu.integration.jade.provider.RecipeLogicProvider;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -17,7 +18,9 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -52,7 +55,7 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
                     // do not show energy usage on machines that do not use energy
                     return;
                 }
-                Component text = null;
+                MutableComponent text = null;
 
                 if (blockEntity instanceof IMachineBlockEntity machineBlockEntity) {
                     var machine = machineBlockEntity.getMetaMachine();
@@ -71,16 +74,42 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
 
                 if (text == null) {
                     var tier = GTUtil.getTierByVoltage(RecipeLogicProvider.getVoltage(capability));
-                    String minAmperage = FormattingUtil
-                            .formatNumber2Places((float) (EUt.getTotalEU()) / GTValues.V[tier]) + TextStyleClass.INFO;
+                    float minAmperage = (float) EUt.getTotalEU() / GTValues.V[tier];
+                    // String minAmperage = FormattingUtil
+                    //        .formatNumber2Places((float) (EUt.getTotalEU()) / GTValues.V[tier]) + TextStyleClass.INFO;
 
                     text = (Component.translatable("gtceu.recipe.eu.total",
-                            FormattingUtil.formatNumbers(EUt.getTotalEU()) + TextStyleClass.INFO)
-                                .withStyle(ChatFormatting.WHITE))
-                            .append(Component.translatable("gtceu.universal.padded_parentheses",
-                                    (Component.translatable("gtceu.jade.amperage_use", minAmperage).withStyle(ChatFormatting.RED))
-                                    .append(Component.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN))
-                                    .append(GTValues.VNF[tier])));
+                            FormattingUtil.formatNumbers(EUt.getTotalEU()))
+                                .withStyle(ChatFormatting.RED));
+
+
+//                            .append(Component.translatable("gtceu.universal.padded_parentheses",
+//                                    (Component.translatable("gtceu.jade.amperage_use", minAmperage).withStyle(ChatFormatting.RED))
+//                                    .append(Component.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN))
+//                                    .append(GTValues.VNF[tier])));
+
+                    MutableComponent voltageTier;
+                    if (tier < GTValues.TIER_COUNT - 1) {
+                        voltageTier = Component.literal(GTValues.VNF[tier])
+                                .withStyle(style -> style.withColor(GTValues.VC[tier]));
+                    } else {
+                        // realTier = round(log4(EUt/MAX))
+                        int calculatedSpeed = Mth.ceil(Math.log((double) EUt.getTotalEU() / GTValues.V[GTValues.MAX]) / Math.log(4));
+                        int speed = Mth.clamp(calculatedSpeed, 0, GTValues.TIER_COUNT);
+                        minAmperage = (float) (minAmperage / Math.pow(4, speed));
+                        voltageTier = Component.literal("MAX")
+                                .withStyle(style -> style.withColor(TooltipHelper.rainbowColor(speed)))
+                                .append(Component.literal("+")
+                                        .withStyle(style -> style.withColor(GTValues.VC[speed]))
+                                        .append(FormattingUtil.formatNumbers(speed)));
+
+                    }
+
+                    text.append(Component.translatable("gtceu.universal.padded_parentheses",
+                            (Component.translatable("gtceu.recipe.eu.amp_notation",
+                                    FormattingUtil.formatNumber2Places(minAmperage),
+                                    voltageTier))
+                                    .withStyle(ChatFormatting.WHITE)));
                 }
 
                 if (EUt.isInput()) {

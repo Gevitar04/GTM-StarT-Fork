@@ -67,7 +67,7 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
                     }
                     if (machine instanceof SteamMachine) {
                         text = Component.translatable("gtceu.jade.fluid_use",
-                                        FormattingUtil.formatNumbers(MBt) + TextStyleClass.INFO)
+                                FormattingUtil.formatNumbers(MBt) + TextStyleClass.INFO)
                                 .withStyle(ChatFormatting.GREEN);
                     }
                 }
@@ -75,26 +75,18 @@ public class RecipeLogicInfoProvider extends CapabilityInfoProvider<RecipeLogic>
                 if (text == null) {
                     var tier = GTUtil.getTierByVoltage(RecipeLogicProvider.getVoltage(capability));
                     float minAmperage = (float) EUt.getTotalEU() / GTValues.V[tier];
-                    // String minAmperage = FormattingUtil
-                    //        .formatNumber2Places((float) (EUt.getTotalEU()) / GTValues.V[tier]) + TextStyleClass.INFO;
 
                     text = (Component.translatable("gtceu.recipe.eu.total",
                             FormattingUtil.formatNumbers(EUt.getTotalEU()))
-                                .withStyle(ChatFormatting.RED));
-
-
-//                            .append(Component.translatable("gtceu.universal.padded_parentheses",
-//                                    (Component.translatable("gtceu.jade.amperage_use", minAmperage).withStyle(ChatFormatting.RED))
-//                                    .append(Component.translatable("gtceu.jade.at").withStyle(ChatFormatting.GREEN))
-//                                    .append(GTValues.VNF[tier])));
+                            .withStyle(ChatFormatting.RED));
 
                     MutableComponent voltageTier;
-                    if (tier < GTValues.TIER_COUNT - 1) {
+                    if (tier < GTValues.TIER_COUNT) {
                         voltageTier = Component.literal(GTValues.VNF[tier])
                                 .withStyle(style -> style.withColor(GTValues.VC[tier]));
                     } else {
-                        // realTier = round(log4(EUt/MAX))
-                        int calculatedSpeed = Mth.ceil(Math.log((double) EUt.getTotalEU() / GTValues.V[GTValues.MAX]) / Math.log(4));
+                        int calculatedSpeed = Mth
+                                .ceil(Math.log((double) EUt.getTotalEU() / GTValues.V[GTValues.MAX]) / Math.log(4));
                         int speed = Mth.clamp(calculatedSpeed, 0, GTValues.TIER_COUNT);
                         minAmperage = (float) (minAmperage / Math.pow(4, speed));
                         voltageTier = Component.literal("MAX")

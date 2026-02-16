@@ -38,6 +38,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import lombok.Getter;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -59,9 +60,13 @@ public class GTRecipeWidget extends WidgetGroup {
     private final GTRecipe recipe;
     private final List<LabelWidget> recipeParaTexts = new ArrayList<>();
     private LabelWidget recipeVoltageText = null;
+    @Getter
     private final int minTier;
+    @Getter
     private int tier;
     private int yOffset;
+    @Getter
+    private OverclockingLogic ocLogic = OverclockingLogic.NON_PERFECT_OVERCLOCK;
     private LabelWidget voltageTextWidget;
 
     public GTRecipeWidget(GTRecipe recipe) {
@@ -108,11 +113,10 @@ public class GTRecipeWidget extends WidgetGroup {
 
         EnergyStack EUt = RecipeHelper.getRealEUt(recipe);
         int yOffset = 5 + size.height;
+        if (recipe.data.getBoolean("hide_duration")) yOffset -= 10;
+        if (recipe.data.getBoolean("hide_total_eu")) yOffset -= 10;
         this.yOffset = yOffset;
         yOffset += !EUt.isEmpty() ? 21 : 0;
-        if (recipe.data.getBoolean("duration_is_total_cwu")) {
-            yOffset -= 10;
-        }
 
         /// add text based on i/o's
         MutableInt yOff = new MutableInt(yOffset);
@@ -160,7 +164,7 @@ public class GTRecipeWidget extends WidgetGroup {
             recipeParaTexts.add(labelWidget);
         }
 
-        if (EUt.voltage() > 0) {
+        if (EUt.voltage() > 0 && !recipe.data.getBoolean("hide_eupt")) {
             textsY += 10;
             Component text = Component.translatable(EUt.isInput() ? "gtceu.recipe.eu" : "gtceu.recipe.eu_inverted",
                     FormattingUtil.formatNumbers(EUt.getTotalEU()))
@@ -201,7 +205,7 @@ public class GTRecipeWidget extends WidgetGroup {
         if (!recipe.data.getBoolean("hide_duration")) {
             texts.add(Component.translatable("gtceu.recipe.duration", FormattingUtil.formatNumbers(duration / 20f)));
         }
-        if (eu.voltage() > 0) {
+        if (eu.voltage() > 0 && !recipe.data.getBoolean("hide_total_eu")) {
             long euTotal = eu.getTotalEU() * duration;
             // sadly we still need a custom override here, since computation uses duration and EU/t very differently
             if (recipe.data.getBoolean("duration_is_total_cwu") &&
@@ -244,7 +248,7 @@ public class GTRecipeWidget extends WidgetGroup {
     }
 
     public void setRecipeOC(int button, boolean isShiftClick) {
-        OverclockingLogic oc = OverclockingLogic.NON_PERFECT_OVERCLOCK;
+        ocLogic = OverclockingLogic.NON_PERFECT_OVERCLOCK;
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             setTier(tier + 1);
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
@@ -253,12 +257,12 @@ public class GTRecipeWidget extends WidgetGroup {
             setTierToMin();
         }
         if (isShiftClick) {
-            oc = OverclockingLogic.PERFECT_OVERCLOCK;
+            ocLogic = OverclockingLogic.PERFECT_OVERCLOCK;
         }
         if (recipe.recipeType == GTRecipeTypes.FUSION_RECIPES) {
-            oc = FusionReactorMachine.FUSION_OC;
+            ocLogic = FusionReactorMachine.FUSION_OC;
         }
-        setRecipeOverclockWidget(oc);
+        setRecipeOverclockWidget(ocLogic);
         setRecipeWidget();
     }
 

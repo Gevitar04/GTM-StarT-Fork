@@ -201,8 +201,9 @@ public interface ModifierFunction {
                     EnergyStack eut = EURecipeCapability.CAP.copyWithModifier(preEUt.stack(), eutModifier);
                     EURecipeCapability.putEUContent(preEUt.isInput() ? copied.tickInputs : copied.tickOutputs, eut);
                 }
-                if (LayeredRecipeHelper.hasLayeredSteps(copied)) {
-                    var steps = LayeredRecipeHelper.getLayeredSteps(copied);
+                var steps = LayeredRecipeHelper.getLayeredSteps(copied);
+                if (steps != null) {
+                    copied.data = copied.data.copy();
                     LayeredRecipeHelper.setLayeredSteps(copied, steps.stream()
                             .map((layer) -> {
                                 var newRecipe = build().apply(layer.recipe());

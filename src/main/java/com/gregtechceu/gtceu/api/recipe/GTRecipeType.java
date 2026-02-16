@@ -7,6 +7,7 @@ import com.gregtechceu.gtceu.api.recipe.category.GTRecipeCategory;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.lookup.GTRecipeLookup;
 import com.gregtechceu.gtceu.api.recipe.ui.GTRecipeTypeUI;
+import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.sound.SoundEntry;
 import com.gregtechceu.gtceu.data.recipe.builder.GTRecipeBuilder;
 import com.gregtechceu.gtceu.utils.FormattingUtil;
@@ -78,6 +79,8 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
     @Getter
     private final GTRecipeCategory category;
     @Getter
+    private GTRecipeCategory syntheticCategory;
+    @Getter
     private final Map<GTRecipeCategory, Set<GTRecipe>> categoryMap = new Object2ObjectOpenHashMap<>();
     @Getter
     private final GTRecipeLookup lookup = new GTRecipeLookup(this);
@@ -104,6 +107,14 @@ public class GTRecipeType implements RecipeType<GTRecipe> {
             map.put(proxyRecipe, new ArrayList<>());
         }
         this.proxyRecipes = map;
+    }
+
+    public GTRecipeType enableSyntheticCategory() {
+        if (syntheticCategory != null) return this;
+
+        syntheticCategory = new GTRecipeCategory(registryName.withSuffix("_synthetic").getPath(), this);
+        GTRegistries.RECIPE_CATEGORIES.register(syntheticCategory.registryKey, syntheticCategory);
+        return this;
     }
 
     public GTRecipeType setMaxIOSize(int maxInputs, int maxOutputs, int maxFluidInputs, int maxFluidOutputs) {

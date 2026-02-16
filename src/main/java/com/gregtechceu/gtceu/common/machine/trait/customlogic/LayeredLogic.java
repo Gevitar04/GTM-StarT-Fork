@@ -25,7 +25,7 @@ public class LayeredLogic implements GTRecipeType.ICustomRecipeLogic {
     public void buildRepresentativeRecipes() {
         var category = recipeType.getSyntheticCategory();
         for (var recipe : recipeType.getRecipesInCategory(recipeType.getCategory())) {
-            var original = LayeredRecipeHelper.getFullLayeredRecipe(recipe);
+            var original = LayeredRecipeHelper.getXeiLayeredRecipe(recipe);
             if (original == null) continue;
             category.addRecipe(original);
         }

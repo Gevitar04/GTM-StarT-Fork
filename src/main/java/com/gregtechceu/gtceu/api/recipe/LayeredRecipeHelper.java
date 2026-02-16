@@ -16,6 +16,7 @@ import net.minecraft.resources.ResourceLocation;
 
 import com.google.common.collect.Streams;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.ints.Int2IntMap;
 import lombok.Getter;
@@ -26,9 +27,7 @@ import java.util.ArrayList;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -39,14 +38,29 @@ public class LayeredRecipeHelper {
         return recipe.data.contains("layered_steps");
     }
 
-    public static List<Layer> getLayeredSteps(GTRecipe recipe) {
-        var serialized = recipe.data.get("layered_steps");
-        return Layer.CODEC.listOf().parse(NbtOps.INSTANCE, serialized).result().orElseThrow();
+    public static @Nullable List<Layer> getLayeredSteps(GTRecipe recipe) {
+        return getLayeredSteps(recipe.data);
+    }
+
+    public static @Nullable List<Layer> getLayeredSteps(CompoundTag recipeData) {
+        var serialized = recipeData.get("layered_steps");
+        if (serialized == null) return null;
+        return Layer.CODEC.listOf().parse(NbtOps.INSTANCE, serialized).result().orElse(null);
     }
 
     public static void setLayeredSteps(GTRecipe recipe, List<Layer> layers) {
         var serialized = Layer.CODEC.listOf().encodeStart(NbtOps.INSTANCE, layers).result().orElseThrow();
         recipe.data.put("layered_steps", serialized);
+    }
+
+    public static @Nullable GTRecipe getXeiLayeredRecipe(GTRecipe recipe) {
+        return getXeiLayeredRecipe(recipe.data);
+    }
+
+    public static @Nullable GTRecipe getXeiLayeredRecipe(CompoundTag recipeData) {
+        if (!recipeData.contains("layered_xei")) return null;
+        var serialized = recipeData.get("layered_xei");
+        return Layer.RECIPE_WITH_ID_CODEC.parse(NbtOps.INSTANCE, serialized).result().orElse(null);
     }
 
     public static @Nullable List<Layer> calculateRecipeSteps(GTRecipe recipe) {
@@ -58,21 +72,26 @@ public class LayeredRecipeHelper {
                 .toList();
     }
 
-    public static BiConsumer<GTRecipeBuilder, Consumer<FinishedRecipe>> onSaveLayeredRecipe(Supplier<GTRecipeType> syntheticType) {
-        return (builder, consumer) -> {
-            if (!builder.data.contains("layered_info")) return;
+    public static void onSaveLayeredRecipe(GTRecipeBuilder builder, Consumer<FinishedRecipe> consumer) {
+        if (!builder.data.contains("layered_info")) return;
 
-            var built = builder.buildRawRecipe();
-            var layers = calculateRecipeSteps(built);
-            assert layers != null;
+        var layers = calculateRecipeSteps(builder.buildRawRecipe());
+        assert layers != null;
 
-            syntheticType.get().copyFrom(builder).id(builder.id).save(consumer);
+        var serializedSteps = Layer.CODEC.listOf().encodeStart(NbtOps.INSTANCE, layers).result().orElseThrow();
 
-            resetRecipeBuilder(builder, layers.get(0).recipe, builder.recipeType);
-            var serializedSteps = Layer.CODEC.listOf().encodeStart(NbtOps.INSTANCE, layers).result().orElseThrow();
-            builder.data.remove("is_layer");
-            builder.data.put("layered_steps", serializedSteps);
-        };
+        var xei = GTRecipeBuilder.of(builder.id, builder.recipeType)
+                .addData("layered_steps", serializedSteps)
+                .addData("hide_duration", true)
+                .addData("hide_total_eu", true)
+                .EUt(layers.get(0).recipe.getInputEUt().getTotalEU())
+                .buildRawRecipe();
+        var serializedXei = Layer.RECIPE_WITH_ID_CODEC.encodeStart(NbtOps.INSTANCE, xei).result().orElseThrow();
+
+        resetRecipeBuilder(builder, layers.get(0).recipe, builder.recipeType);
+        builder.data.remove("is_layer");
+        builder.data.put("layered_steps", serializedSteps);
+        builder.data.put("layered_xei", serializedXei);
     }
 
     private static void resetRecipeBuilder(GTRecipeBuilder builder, ResourceLocation id, GTRecipeType recipeType) {
@@ -183,9 +202,13 @@ public class LayeredRecipeHelper {
                 fullRecipe.recipeCategory);
     }
 
-    private static @Nullable LayeredRecipeInfo parseRecipeInfo(GTRecipe recipe) {
-        var layeredInfoTag = recipe.data.get("layered_info");
+    public static @Nullable LayeredRecipeInfo parseRecipeInfo(CompoundTag data) {
+        var layeredInfoTag = data.get("layered_info");
         return LayeredRecipeInfo.CODEC.parse(NbtOps.INSTANCE, layeredInfoTag).result().orElse(null);
+    }
+
+    public static @Nullable LayeredRecipeInfo parseRecipeInfo(GTRecipe recipe) {
+        return parseRecipeInfo(recipe.data);
     }
 
     public static class LayerPayload extends ObjectTypedPayload<Layer> {
@@ -204,9 +227,16 @@ public class LayeredRecipeHelper {
     @Accessors(chain = true, fluent = true)
     public static class Layer {
 
+        public static final Codec<GTRecipe> RECIPE_WITH_ID_CODEC = RecordCodecBuilder.create(instance -> instance.group(
+                ResourceLocation.CODEC.fieldOf("id").forGetter(recipe -> recipe.id),
+                ((MapCodec.MapCodecCodec<GTRecipe>) GTRecipeSerializer.CODEC).codec().forGetter(recipe -> recipe))
+                .apply(instance, (id, recipe) -> {
+                    recipe.setId(id);
+                    return recipe;
+                }));
+
         public static final Codec<Layer> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ResourceLocation.CODEC.fieldOf("id").forGetter(layer -> layer.recipe.id),
-                GTRecipeSerializer.CODEC.fieldOf("recipe").forGetter(Layer::recipe),
+                RECIPE_WITH_ID_CODEC.fieldOf("recipe").forGetter(Layer::recipe),
                 Codec.INT.fieldOf("timeout").forGetter(Layer::timeout)).apply(instance, Layer::new));
 
         @Getter
@@ -214,12 +244,6 @@ public class LayeredRecipeHelper {
 
         @Getter
         private final int timeout;
-
-        public Layer(ResourceLocation id, GTRecipe recipe, int timeout) {
-            this.recipe = recipe.copy();
-            this.recipe.id = id;
-            this.timeout = timeout;
-        }
 
         public Layer(GTRecipe recipe, int timeout) {
             this.recipe = recipe;

@@ -61,6 +61,12 @@ public class ConfigHolder {
         public boolean harderRods = false; // default false
         @Configurable
         @Configurable.Comment({
+                "Adds smithing table recipes for the netherite tools.",
+                "Default: true"
+        })
+        public boolean netheriteToolSmithingRecipes = true;
+        @Configurable
+        @Configurable.Comment({
                 "Whether to make crafting recipes for Bricks, Firebricks, Nether Bricks, and Coke Bricks harder.",
                 "Default: false" })
         public boolean harderBrickRecipes = false; // default false

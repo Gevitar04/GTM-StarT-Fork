@@ -1882,6 +1882,7 @@
   "config.gtceu.option.nativeEUToFE": "nativeEUToFE",
   "config.gtceu.option.nerfPaperCrafting": "nerfPaperCrafting",
   "config.gtceu.option.nerfWoodCrafting": "nerfWoodCrafting",
+  "config.gtceu.option.netheriteToolSmithingRecipes": "netheriteToolSmithingRecipes",
   "config.gtceu.option.onlyOwnerBreak": "onlyOwnerBreak",
   "config.gtceu.option.onlyOwnerGUI": "onlyOwnerGUI",
   "config.gtceu.option.orderedAssemblyLineFluids": "orderedAssemblyLineFluids",

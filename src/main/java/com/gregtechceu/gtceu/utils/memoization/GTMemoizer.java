@@ -1,9 +1,10 @@
 package com.gregtechceu.gtceu.utils.memoization;
 
 import com.gregtechceu.gtceu.utils.memoization.function.MemoizedBiFunction;
-import lombok.Getter;
+
 import net.minecraft.world.level.block.Block;
 
+import lombok.Getter;
 import org.apache.commons.lang3.function.TriFunction;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.lang3.tuple.Triple;

@@ -917,17 +917,12 @@ public class ConfigHolder {
         public boolean renderGrowingPlants = true;
 
         @Configurable
-        @Configurable.Comment({ "Whether or not to color material/ore block highlights in the material color",
-                "Default: true" })
-        public boolean coloredMaterialBlockOutline = true;
-
-        @Configurable
         @Configurable.Comment({ "Whether or not to color tiered machine highlights in the tier color",
                 "Default: true" })
         public boolean coloredTieredMachineOutline = true;
 
         @Configurable
-        @Configurable.Comment({ "Whether or not to color wire/cable highlights based on voltage tier or material color",
+        @Configurable.Comment({ "Whether or not to color wire/cable highlights based on voltage tier",
                 "Default: true" })
         public boolean coloredWireOutline = true;
     }

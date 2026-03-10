@@ -306,6 +306,14 @@ public class ToolHelper {
         var harvestableBlocks = getHarvestableBlocks(stack, player);
         if (!harvestableBlocks.isEmpty()) {
             for (BlockPos pos : harvestableBlocks) {
+                if (pos.equals(targeted)) {
+                    Level world = player.level();
+                    BlockState state = world.getBlockState(pos);
+                    world.levelEvent(LevelEvent.PARTICLES_DESTROY_BLOCK, pos, Block.getId(state));
+
+                    continue;
+                }
+
                 if (!breakBlockRoutine(player, stack, pos, pos.equals(targeted))) {
                     return true;
                 }

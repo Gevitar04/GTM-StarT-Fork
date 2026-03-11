@@ -757,8 +757,8 @@ public class MultiblockDisplayText {
         }
 
         public Builder addLayeredNextStepInputs(LayeredRecipeLogic logic) {
-            var layers = logic.getLayeredRecipe();
-            if (!isStructureFormed || layers == null || logic.getLastRecipe() == null)
+            var recipe = logic.getNextLayeredRecipe();
+            if (!isStructureFormed || recipe == null)
                 return this;
 
             textList.add(Component.literal(""));
@@ -767,7 +767,6 @@ public class MultiblockDisplayText {
                             .append(Component.translatable("gtceu.multiblock.layered.cancel"))
                             .append(Component.literal("]")), "layered_cancel")));
 
-            var recipe = layers.get(logic.getLayeredRecipeLayerIndex()).recipe();
             var itemInputs = recipe.getInputContents(ItemRecipeCapability.CAP);
             var fluidInputs = recipe.getInputContents(FluidRecipeCapability.CAP);
 

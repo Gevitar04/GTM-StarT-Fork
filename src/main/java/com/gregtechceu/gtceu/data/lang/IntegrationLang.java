@@ -78,6 +78,8 @@ public class IntegrationLang {
         provider.add("gtceu.top.unit.fluid_milibuckets", "L");
         provider.add("gtceu.top.unit.fluid_buckets", "kL");
         provider.add("gtceu.top.recipe_output", "Recipe Outputs:");
+        provider.add("gtceu.top.layered_recipe.step", "Recipe Step %s of %s");
+        provider.add("gtceu.top.layered_recipe.final", "Final Step Outputs:");
         provider.add("gtceu.top.item_auto_output", "Item Output: %s");
         provider.add("gtceu.top.fluid_auto_output", "Fluid Output: %s");
         provider.add("gtceu.top.auto_output", "Auto Output");

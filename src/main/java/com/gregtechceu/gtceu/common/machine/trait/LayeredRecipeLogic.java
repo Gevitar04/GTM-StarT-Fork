@@ -15,6 +15,7 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
 
@@ -48,6 +49,24 @@ public class LayeredRecipeLogic extends RecipeLogic {
             return null;
         }
         return layeredRecipe.get(layeredRecipeLayerIndex);
+    }
+
+    public int getCoverRedstoneOutput() {
+        return Mth.clamp(layeredRecipeLayerIndex + (lastRecipe == null ? 0 : 1), 0, 15);
+    }
+
+    public GTRecipe getNextLayeredRecipe() {
+        if (layeredRecipe == null || layeredRecipeLayerIndex < 0) {
+            return null;
+        }
+        if (lastRecipe == null) {
+            // not running and waiting for inputs
+            return layeredRecipe.get(layeredRecipeLayerIndex).recipe();
+        }
+        if (layeredRecipeLayerIndex < layeredRecipe.size() - 1) {
+            return layeredRecipe.get(layeredRecipeLayerIndex + 1).recipe();
+        }
+        return null;
     }
 
     @Override
@@ -87,10 +106,23 @@ public class LayeredRecipeLogic extends RecipeLogic {
         setStatus(RecipeLogic.Status.IDLE);
 
         if (finishedLastStep) {
-            layeredRecipe = null;
-            layeredRecipeLayerIndex = -1;
+            // try the first step again
+            var firstStepRecipe = layeredRecipe.get(0).recipe();
+            var recipeMatch = checkRecipe(firstStepRecipe);
+            if (recipeMatch.isSuccess()) {
+                layeredRecipeLayerIndex = 0;
+                setupRecipe(firstStepRecipe);
+            } else {
+                layeredRecipe = null;
+                layeredRecipeLayerIndex = -1;
+            }
         } else {
-            // TODO: attempt next layer immediately
+            // already transformed
+            var nextStepRecipe = layeredRecipe.get(layeredRecipeLayerIndex).recipe();
+            var recipeMatch = checkRecipe(nextStepRecipe);
+            if (recipeMatch.isSuccess()) {
+                setupRecipe(nextStepRecipe);
+            }
         }
     }
 

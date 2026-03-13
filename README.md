@@ -43,12 +43,13 @@ This fork should be considered a separate project with its own design goals.
 - Multiblocks can support layered inputs (stepped recipes)
 - Advanced redstone detectors can optionally output strong redstone signals
 - ULV components added
+- ME hatches can connect to the same network via sides by using a screwdriver
 
 #### Gameplay & Balance Changes
 - LCR coil benefits and parallel LCR support (configurable)
 - Chance boosting now scales with recipe tier instead of speed overclocks (configurable)
 - Steam boiler balance adjustments
-- Large Packer size changed from 6-long to 5-long
+- Large Packer size changed from 6 blocks long to 5 blocks long
 - Enabled borosilicate glass plates and foils
 
 #### Configurability Improvements
@@ -67,24 +68,25 @@ This fork should be considered a separate project with its own design goals.
 
 #### Technical / API Improvements
 - TagPrefix blocks can easily use falling block behavior
-- Disabled auto generating of recycling recipes after KubeJS recipe event which was causing recycling recipes to not be removable through KubeJS
+- Disabled auto generation of recycling recipes after KubeJS recipe event which caused recycling recipes to non-removable through KubeJS
+- You can now use `.colors(primary, secondary)` to set both colors of a material
 
 #### Bug Fixes
 - Fixed voltage display not handling MAX+X values correctly
 - Fixed 2A energy hatches using incorrect 1A overlays
-- Fixed not being able to use RShift when viewing extended tooltips
+- Fixed the inability to use RShift when viewing extended tooltips
 - Fixed bronze armor being stronger than steel armor
 - Fixed lamp blocks not being able to be broken with a pickaxe and wrench
 - Fixed AOE on mining hammer using N+1 durability when mining N blocks
-- Fixed idle and paused overlay for assembler not being the same height as the active overlay
-- Fixed torch recipe using creosote consuming the fluid containers
-- Fix combustion generators displaying wrong and scaling lubricant usage
+- Fixed the idle and paused overlays for the assembler not being the same height as the active overlay
+- Fixed the torch recipe using creosote consuming the fluid container
+- Fixed combustion generators displaying incorrect information fuel usage
 
 #### UI and Texture Changes
 - Voltage display format adjusted (EU/t and amperage order for clarity)
 - Fluid drills and miners added to XEI diagrams
-- Auto-push buttons moved to the right side of the machine UI
-- Mega Blast Chiller ow uses the vacuum freezer overlay
+- Auto-push buttons were moved to the right side of the machine UI
+- Mega Blast Chiller now uses the vacuum freezer overlay
 - Improved filter slot in item buses
 
 ## Credits

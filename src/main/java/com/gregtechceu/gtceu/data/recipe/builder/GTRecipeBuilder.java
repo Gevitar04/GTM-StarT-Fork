@@ -619,6 +619,19 @@ public class GTRecipeBuilder {
         return output(ItemRecipeCapability.CAP, ingredient);
     }
 
+    public GTRecipeBuilder outputItems(Ingredient... outputs) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (int i = 0; i < outputs.length; i++) {
+            var ingredient = outputs[i];
+            if (missingIngredientError(i, false, ItemRecipeCapability.CAP, ingredient::isEmpty)) {
+                return this;
+            } else {
+                ingredients.add(ingredient);
+            }
+        }
+        return output(ItemRecipeCapability.CAP, ingredients.toArray(Ingredient[]::new));
+    }
+
     public GTRecipeBuilder outputItemRanged(IntProviderIngredient provider) {
         return outputItems(provider);
     }
@@ -1438,6 +1451,17 @@ public class GTRecipeBuilder {
         return this;
     }
 
+    public GTRecipeBuilder layeredRecipe(Consumer<LayeredRecipeInfo.Builder> config) {
+        if (!recipeType.isLayered()) {
+            GTCEu.LOGGER.error("Can't use layeredRecipe on a non-layered recipe type");
+            return this;
+        }
+        var layered = new LayeredRecipeInfo.Builder(this);
+        config.accept(layered);
+        layered.apply();
+        return this;
+    }
+
     public void toJson(JsonObject json) {
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
         JsonObject serialized = GTRecipeSerializer.CODEC.encodeStart(ops, buildRawRecipe())
@@ -1470,6 +1494,10 @@ public class GTRecipeBuilder {
     }
 
     public FinishedRecipe build() {
+        if (data.contains("layered_info")) {
+            LayeredRecipeHelper.applyLayeredRecipeModifications(this);
+        }
+
         return new FinishedRecipe() {
 
             @Override
@@ -1658,6 +1686,9 @@ public class GTRecipeBuilder {
                                           boolean isInput,
                                           Map<RecipeCapability<?>, List<Content>> table,
                                           int addedEntries) {
+        // Layered recipes may exceed input sizes
+        if (this.data.contains("layered_info")) return;
+
         var recipeCapabilityMax = isInput ? recipeType.maxInputs : recipeType.maxOutputs;
         if (!recipeCapabilityMax.containsKey(capability)) return;
 

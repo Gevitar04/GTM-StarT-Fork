@@ -106,6 +106,8 @@ public class GTCovers {
             AdvancedEnergyDetectorCover::new);
     public final static CoverDefinition MAINTENANCE_DETECTOR = register("maintenance_detector",
             MaintenanceDetectorCover::new);
+    public final static CoverDefinition LAYERED_STEP_DETECTOR = register("layered_step_detector",
+            LayeredStepDetectorCover::new);
 
     // Solar Panels
     public final static CoverDefinition SOLAR_PANEL_BASIC = register("solar_panel", CoverSolarPanel::new);

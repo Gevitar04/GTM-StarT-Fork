@@ -947,6 +947,7 @@ public class LangHandler {
         provider.add("gtceu.recipe.eu.total", "%s EU/t");
         provider.add("gtceu.recipe.eu.amp_notation", "%s A @ %s");
         provider.add("gtceu.recipe.duration", "Duration: %s secs");
+        provider.add("gtceu.recipe.total_duration", "Total Duration: %s secs");
         provider.add("gtceu.recipe.voltage", "Voltage: %s V @ %s A");
         provider.add("gtceu.recipe.total_eu", "Total Usage: %s EU/t");
         provider.add("gtceu.recipe.not_consumed", "Does not get consumed in the process");
@@ -966,6 +967,7 @@ public class LangHandler {
         provider.add("gtceu.recipe.computation_per_tick", "Min. Computation: %s CWU/t");
         provider.add("gtceu.recipe.total_computation", "Computation: %s CWU");
         provider.add("gtceu.recipe.byproduct_tier", "Byproducts from %s§r+");
+        provider.add("gtceu.recipe.layered.step", "Step %s");
         provider.add("gtceu.fluid.click_to_fill",
                 "§7Click with a Fluid Container to §bfill §7the tank (Shift-click for a full stack).");
         provider.add("gtceu.fluid.click_combined",
@@ -1178,6 +1180,14 @@ public class LangHandler {
         provider.add("gtceu.multiblock.pattern.location_end", "§cVery End§r");
         provider.add("gtceu.multiblock.pattern.replaceable_air", "Replaceable by Air");
 
+        provider.add("gtceu.multiblock.layered.progress", "Total Progress: %ss / %ss (%s%%)");
+        provider.add("gtceu.multiblock.layered.step", "Current Step: %s/%s");
+        provider.add("gtceu.multiblock.layered.step_progress", "Step Progress: %ss / %ss (%s%%)");
+        provider.add("gtceu.multiblock.layered.recipe_contents_line", "%s x §e%s§r");
+        provider.add("gtceu.multiblock.layered.next_step_inputs", "Next Step Inputs:");
+        provider.add("gtceu.multiblock.layered.cancel", "Cancel");
+        provider.add("gtceu.multiblock.layered.final_step_outputs", "Final Step Outputs:");
+
         provider.add("gtceu.multiblock.computation.max", "Max CWU/t: %s");
         provider.add("gtceu.multiblock.computation.usage", "Using: %s");
         provider.add("gtceu.multiblock.computation.non_bridging", "Non-bridging connection found");
@@ -1237,6 +1247,7 @@ public class LangHandler {
         provider.add("config.jade.plugin_gtceu.recipe_logic_provider", "[GTCEu] Recipe Logic");
         provider.add("config.jade.plugin_gtceu.hazard_cleaner_provider", "[GTCEu] Hazard Cleaner");
         provider.add("config.jade.plugin_gtceu.recipe_output_info", "[GTCEu] Recipe Output Info");
+        provider.add("config.jade.plugin_gtceu.layered_recipe_info", "[GTCEu] Layered Recipe Info");
         provider.add("config.jade.plugin_gtceu.auto_output_info", "[GTCEu] Auto Output Info");
         provider.add("config.jade.plugin_gtceu.cable_info", "[GTCEu] Cable Info");
         provider.add("config.jade.plugin_gtceu.exhaust_vent_info", "[GTCEu] Exhaust Vent Info");

@@ -720,23 +720,22 @@ public interface IGTTool extends HeldItemUIFactory.IHeldItemUIHolder, ItemLike, 
 
         // behaviors
         AoESymmetrical aoeDefinition = getAoEDefinition(stack);
-
+        boolean addedMagneticOrAOELine = false;
         if (!aoeDefinition.isZero()) {
             tooltip.add(Component.translatable("item.gtceu.tool.behavior.aoe_mining",
                     aoeDefinition.column * 2 + 1, aoeDefinition.row * 2 + 1, aoeDefinition.layer + 1));
-            tooltip.add(CommonComponents.EMPTY);
+            addedMagneticOrAOELine = true;
         }
 
-        boolean addedMagneticLine = false;
         CompoundTag behaviorsTag = getBehaviorsTag(stack);
         if (behaviorsTag.getBoolean(RELOCATE_MINED_BLOCKS_KEY)) {
             tooltip.add(Component.translatable("item.gtceu.tool.behavior.relocate_mining"));
-            addedMagneticLine = true;
+            addedMagneticOrAOELine = true;
         }
         int length = tooltip.size();
         toolStats.getBehaviors().forEach(behavior -> behavior.addInformation(stack, world, tooltip, flag));
 
-        if (tooltip.size() != length || addedMagneticLine) {
+        if (tooltip.size() != length || addedMagneticOrAOELine) {
             tooltip.add(CommonComponents.EMPTY);
         }
 

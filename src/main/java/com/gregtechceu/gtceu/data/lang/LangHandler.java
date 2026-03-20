@@ -522,9 +522,26 @@ public class LangHandler {
         multilineLang(provider, "cover.advanced_detector.signal.disabled",
                 "Output Signal: Weak\n\n" + detectorOutputSignalDescription);
 
+        provider.add("cover.advanced_detector.ticks_per_cycle", "Ticks per Cycle");
+        provider.add("cover.advanced_detector.ticks_per_cycle.tooltip", "Delay between redstone updates");
+
+        provider.add("cover.layered_step_detector.label", "Layered Step Detector");
+        var layeredStepDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone is emitted when the machine is processing a layered recipe, and stops emitting when it is not processing any layered recipes";
+        multilineLang(provider, "cover.layered_step_detector.invert.enabled",
+                "Output: Inverted\n\n" + layeredStepDetectorInvertDescription);
+        multilineLang(provider, "cover.layered_step_detector.invert.disabled",
+                "Output: Normal\n\n" + layeredStepDetectorInvertDescription);
+
         provider.add("cover.advanced_energy_detector.label", "Advanced Energy Detector");
         provider.add("cover.advanced_energy_detector.min", "Min");
         provider.add("cover.advanced_energy_detector.max", "Max");
+
+        provider.add("cover.advanced_activity_detector.label", "Advanced Activity Detector");
+        var advancedActivityDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone is emitted when the machine is working, and stops emitting when it is idle";
+        multilineLang(provider, "cover.advanced_activity_detector.invert.enabled",
+                "Output: Inverted\n\n" + advancedActivityDetectorInvertDescription);
+        multilineLang(provider, "cover.advanced_activity_detector.invert.disabled",
+                "Output: Normal\n\n" + advancedActivityDetectorInvertDescription);
 
         var advancedEnergyDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone is emitted when less than the minimum EU, and stops emitting when greater than the max EU";
         multilineLang(provider, "cover.advanced_energy_detector.invert.enabled",

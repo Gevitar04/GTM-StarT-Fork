@@ -6,6 +6,7 @@ import com.gregtechceu.gtceu.api.capability.IEnergyInfoProvider;
 import com.gregtechceu.gtceu.api.cover.CoverDefinition;
 import com.gregtechceu.gtceu.api.cover.IUICover;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
+import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.LongInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
 import com.gregtechceu.gtceu.utils.GTMath;
@@ -21,6 +22,8 @@ import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -46,6 +49,8 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
 
     private static final int DEFAULT_MIN_PERCENT = 33;
     private static final int DEFAULT_MAX_PERCENT = 66;
+    private static final int DEFAULT_TICKS_PER_CYCLE = 20;
+    private static final int MIN_TICKS_PER_CYCLE = 2;
 
     @Persisted
     @Getter
@@ -65,11 +70,21 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
     @Setter
     private boolean isStrongSignal;
 
+    @Persisted
+    @DescSynced
+    @Getter
+    private int ticksPerCycle;
+
     public AdvancedEnergyDetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
         this.minValue = DEFAULT_MIN_PERCENT;
         this.maxValue = DEFAULT_MAX_PERCENT;
+        this.ticksPerCycle = DEFAULT_TICKS_PER_CYCLE;
         this.usePercent = true;
+    }
+
+    public void setTicksPerCycle(int ticksPerCycle) {
+        this.ticksPerCycle = Mth.clamp(ticksPerCycle, MIN_TICKS_PER_CYCLE, ticksPerCycle);
     }
 
     @Override
@@ -134,7 +149,7 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
 
     @Override
     public Widget createUIWidget() {
-        WidgetGroup group = new WidgetGroup(0, 0, 176, 105);
+        WidgetGroup group = new WidgetGroup(0, 0, 176, 130);
         group.addWidget(new LabelWidget(10, 5, "cover.advanced_energy_detector.label"));
 
         group.addWidget(new TextBoxWidget(10, 55, 25,
@@ -143,8 +158,15 @@ public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements 
         group.addWidget(new TextBoxWidget(10, 80, 25,
                 List.of(LocalizationUtils.format("cover.advanced_energy_detector.max"))));
 
+        group.addWidget(new TextBoxWidget(10, 105, 65,
+                List.of(LocalizationUtils.format("cover.advanced_detector.ticks_per_cycle")))
+                .setHoverTooltips(Component.translatable("cover.advanced_detector.ticks_per_cycle.tooltip")));
+
         minValueInput = new LongInputWidget(40, 50, 176 - 40 - 10, 20, this::getMinValue, this::setMinValue);
         maxValueInput = new LongInputWidget(40, 75, 176 - 40 - 10, 20, this::getMaxValue, this::setMaxValue);
+        group.addWidget(new IntInputWidget(80, 100, 176 - 80 - 10, 20, this::getTicksPerCycle, this::setTicksPerCycle)
+                .setMin(MIN_TICKS_PER_CYCLE));
+
         initializeMinMaxInputs(usePercent);
         group.addWidget(minValueInput);
         group.addWidget(maxValueInput);

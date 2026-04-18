@@ -58,6 +58,8 @@ This fork should be considered a separate project with its own design goals.
 - Energy converters now default to FE to EU mode
 - Readded the sodium to sodium hydroxide recipe and increased it's duration
 - Increased duration of formic acid recipe
+- Multismelter now subticks
+- Added batch mode to ABS
 
 #### Configurability Improvements
 - Multiblocks stalling on power loss is now configurable
@@ -79,6 +81,9 @@ This fork should be considered a separate project with its own design goals.
 - Disabled auto generation of recycling recipes after KubeJS recipe event which caused recycling recipes to non-removable through KubeJS
 - You can now use `.colors(primary, secondary)` to set both colors of a material
 - Improved error message for using incompatible category for recipe type
+- Assembly line recipes won't fail if an input bus has a configured circuit set
+- UI height now grows correctly for ME parts that have more than 16 slots
+- Made a couple classes public for ME parts for usage in addons
 
 #### Bug Fixes
 - Fixed voltage display not handling MAX+X values correctly
@@ -94,7 +99,7 @@ This fork should be considered a separate project with its own design goals.
 - Fixed some issues ith tooltips for tools
 - Fixed battery buffers showing the input overlay on the sides
 - Fixed "water bottle" fluid being registered in EMI
-- Fixed fluid regulators not checking amount
+- Fixed hammer drops when the output is a TagPrefix that isn't an ore
 
 #### UI and Texture Changes
 - Voltage display format adjusted (EU/t and amperage order for clarity)

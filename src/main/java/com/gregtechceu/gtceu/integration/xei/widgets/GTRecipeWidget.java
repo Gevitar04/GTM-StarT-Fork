@@ -8,10 +8,7 @@ import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.WidgetUtils;
 import com.gregtechceu.gtceu.api.gui.widget.PredicatedButtonWidget;
-import com.gregtechceu.gtceu.api.recipe.GTRecipe;
-import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
-import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
-import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
+import com.gregtechceu.gtceu.api.recipe.*;
 import com.gregtechceu.gtceu.api.recipe.chance.boost.ChanceBoostFunction;
 import com.gregtechceu.gtceu.api.recipe.chance.logic.ChanceLogic;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -38,6 +35,7 @@ import net.minecraftforge.fml.loading.FMLLoader;
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
 import it.unimi.dsi.fastutil.objects.Object2ObjectLinkedOpenHashMap;
+import lombok.Getter;
 import org.apache.commons.lang3.mutable.MutableInt;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -55,13 +53,18 @@ public class GTRecipeWidget extends WidgetGroup {
 
     public static final int LINE_HEIGHT = 10;
 
+    @Getter
     private final int xOffset;
     private final GTRecipe recipe;
     private final List<LabelWidget> recipeParaTexts = new ArrayList<>();
     private LabelWidget recipeVoltageText = null;
+    @Getter
     private final int minTier;
+    @Getter
     private int tier;
     private int yOffset;
+    @Getter
+    private OverclockingLogic ocLogic = OverclockingLogic.NON_PERFECT_OVERCLOCK;
     private LabelWidget voltageTextWidget;
 
     public GTRecipeWidget(GTRecipe recipe) {
@@ -199,7 +202,10 @@ public class GTRecipeWidget extends WidgetGroup {
                                                      EnergyStack.WithIO eu) {
         List<Component> texts = new ArrayList<>();
         if (!recipe.data.getBoolean("hide_duration")) {
-            texts.add(Component.translatable("gtceu.recipe.duration", FormattingUtil.formatNumbers(duration / 20f)));
+            texts.add(Component.translatable(
+                    LayeredRecipeHelper.hasLayeredSteps(recipe) ? "gtceu.recipe.total_duration" :
+                            "gtceu.recipe.duration",
+                    FormattingUtil.formatNumbers(duration / 20f)));
         }
         if (eu.voltage() > 0) {
             long euTotal = eu.getTotalEU() * duration;
@@ -244,7 +250,7 @@ public class GTRecipeWidget extends WidgetGroup {
     }
 
     public void setRecipeOC(int button, boolean isShiftClick) {
-        OverclockingLogic oc = OverclockingLogic.NON_PERFECT_OVERCLOCK;
+        ocLogic = OverclockingLogic.NON_PERFECT_OVERCLOCK;
         if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
             setTier(tier + 1);
         } else if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
@@ -253,12 +259,12 @@ public class GTRecipeWidget extends WidgetGroup {
             setTierToMin();
         }
         if (isShiftClick) {
-            oc = OverclockingLogic.PERFECT_OVERCLOCK;
+            ocLogic = OverclockingLogic.PERFECT_OVERCLOCK;
         }
         if (recipe.recipeType == GTRecipeTypes.FUSION_RECIPES) {
-            oc = FusionReactorMachine.FUSION_OC;
+            ocLogic = FusionReactorMachine.FUSION_OC;
         }
-        setRecipeOverclockWidget(oc);
+        setRecipeOverclockWidget(ocLogic);
         setRecipeWidget();
     }
 

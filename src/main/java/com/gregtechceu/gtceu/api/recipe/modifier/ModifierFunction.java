@@ -3,6 +3,7 @@ package com.gregtechceu.gtceu.api.recipe.modifier;
 import com.gregtechceu.gtceu.api.capability.recipe.EURecipeCapability;
 import com.gregtechceu.gtceu.api.capability.recipe.RecipeCapability;
 import com.gregtechceu.gtceu.api.recipe.GTRecipe;
+import com.gregtechceu.gtceu.api.recipe.LayeredRecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.RecipeCondition;
 import com.gregtechceu.gtceu.api.recipe.RecipeHelper;
 import com.gregtechceu.gtceu.api.recipe.content.Content;
@@ -199,6 +200,16 @@ public interface ModifierFunction {
                     var preEUt = RecipeHelper.getRealEUtWithIO(recipe);
                     EnergyStack eut = EURecipeCapability.CAP.copyWithModifier(preEUt.stack(), eutModifier);
                     EURecipeCapability.putEUContent(preEUt.isInput() ? copied.tickInputs : copied.tickOutputs, eut);
+                }
+                var steps = LayeredRecipeHelper.getLayeredSteps(copied);
+                if (steps != null) {
+                    copied.data = copied.data.copy();
+                    LayeredRecipeHelper.setLayeredSteps(copied, steps.stream()
+                            .map((layer) -> {
+                                var newRecipe = build().apply(layer.recipe());
+                                return new LayeredRecipeHelper.Layer(newRecipe, layer.timeout());
+                            })
+                            .toList());
                 }
                 return copied;
             };

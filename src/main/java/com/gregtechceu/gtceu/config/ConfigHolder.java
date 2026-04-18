@@ -245,10 +245,16 @@ public class ConfigHolder {
         public static class AE2CompatConfig {
 
             @Configurable
-            @Configurable.Comment({ "The interval between ME Hatch/Bus interact ME network.",
-                    "It may cause lag if the interval is too small.", "Default: 2 sec" })
+            @Configurable.Comment({ "The default interval between ME Hatch/Bus interact ME network.",
+                    "Can't be lower than minUpdateIntervals.", "Default: 2 sec" })
             @Configurable.Range(min = 1) // Do Not Set a Maximum, if someone wants >80 ticks let them.
             public int updateIntervals = 40;
+
+            @Configurable
+            @Configurable.Comment({ "The minimum interval between ME Hatch/Bus interact ME network.",
+                    "It may cause lag if the interval is too small.", "Default: 1 tick" })
+            @Configurable.Range(min = 1)
+            public int minUpdateIntervals = 1;
 
             @Configurable
             @Configurable.Comment({ "The energy consumption of ME Hatch/Bus.", "Default: 4.0AE/t" })
@@ -595,6 +601,10 @@ public class ConfigHolder {
         })
         public boolean ulvComponentsEnabled = false;
 
+        public boolean registerULVComponents() {
+            return GTCEu.isDataGen() || ulvComponentsEnabled;
+        }
+
         @Configurable
         @Configurable.Comment({ "Whether the Assembly Line should require the item inputs to be in order.",
                 "Default: true" })
@@ -625,6 +635,10 @@ public class ConfigHolder {
         })
         public boolean parallelLCR = true;
 
+        public boolean registerParallelLCR() {
+            return GTCEu.isDataGen() || parallelLCR;
+        }
+
         @Configurable
         @Configurable.Comment("Whether the Drums can input fluids from the output side (bottom).")
         public boolean allowDrumsInputFluidsFromOutputSide = false;
@@ -641,6 +655,16 @@ public class ConfigHolder {
                 "Default: false"
         })
         public boolean multiblocksStallOnPowerFail = false;
+
+        @Configurable
+        @Configurable.Comment({ "Default update rate of redstone covers in ticks", "Default: 20 ticks" })
+        @Configurable.Range(min = 1)
+        public int coverDefaultTicksPerCycle = 20;
+
+        @Configurable
+        @Configurable.Comment({ "Minimum update rate of redstone covers in ticks", "Default: 1 tick" })
+        @Configurable.Range(min = 1)
+        public int coverMinTicksPerCycle = 1;
 
         @Configurable
         @Configurable.Comment("Small Steam Boiler Options")

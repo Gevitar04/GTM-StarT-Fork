@@ -220,6 +220,16 @@ public class GTRecipeBuilder {
         return this;
     }
 
+    public GTRecipeBuilder addConditions(RecipeCondition<?>... conditions) {
+        return addConditions(Arrays.asList(conditions));
+    }
+
+    public GTRecipeBuilder addConditions(List<RecipeCondition<?>> conditions) {
+        this.conditions.addAll(conditions);
+        recipeType.setMinRecipeConditions(this.conditions.size());
+        return this;
+    }
+
     public GTRecipeBuilder duration(int duration) {
         if (duration < 0) {
             GTCEu.LOGGER.error("Recipe duration must be non negative, id: {}", this.id);
@@ -617,6 +627,19 @@ public class GTRecipeBuilder {
 
     protected GTRecipeBuilder outputItems(Ingredient ingredient) {
         return output(ItemRecipeCapability.CAP, ingredient);
+    }
+
+    public GTRecipeBuilder outputItems(Ingredient... outputs) {
+        List<Ingredient> ingredients = new ArrayList<>();
+        for (int i = 0; i < outputs.length; i++) {
+            var ingredient = outputs[i];
+            if (missingIngredientError(i, false, ItemRecipeCapability.CAP, ingredient::isEmpty)) {
+                return this;
+            } else {
+                ingredients.add(ingredient);
+            }
+        }
+        return output(ItemRecipeCapability.CAP, ingredients.toArray(Ingredient[]::new));
     }
 
     public GTRecipeBuilder outputItemRanged(IntProviderIngredient provider) {
@@ -1438,6 +1461,17 @@ public class GTRecipeBuilder {
         return this;
     }
 
+    public GTRecipeBuilder layeredRecipe(Consumer<LayeredRecipeInfo.Builder> config) {
+        if (!recipeType.isLayered()) {
+            GTCEu.LOGGER.error("Can't use layeredRecipe on a non-layered recipe type");
+            return this;
+        }
+        var layered = new LayeredRecipeInfo.Builder(this);
+        config.accept(layered);
+        layered.apply();
+        return this;
+    }
+
     public void toJson(JsonObject json) {
         var ops = RegistryOps.create(JsonOps.INSTANCE, GTRegistries.builtinRegistry());
         JsonObject serialized = GTRecipeSerializer.CODEC.encodeStart(ops, buildRawRecipe())
@@ -1470,6 +1504,10 @@ public class GTRecipeBuilder {
     }
 
     public FinishedRecipe build() {
+        if (data.contains("layered_info")) {
+            LayeredRecipeHelper.applyLayeredRecipeModifications(this);
+        }
+
         return new FinishedRecipe() {
 
             @Override
@@ -1515,10 +1553,13 @@ public class GTRecipeBuilder {
 
         if (recipeType != null) {
             if (recipeCategory == null) {
-                GTCEu.LOGGER.error("Recipes must have a category", new IllegalArgumentException());
-            } else if (recipeCategory != GTRecipeCategory.DEFAULT && recipeCategory.getRecipeType() != recipeType) {
-                GTCEu.LOGGER.error("Cannot apply Category with incompatible RecipeType",
+                GTCEu.LOGGER.error("Recipe '{}' is missing a recipe category.", this.id,
                         new IllegalArgumentException());
+            } else if (recipeCategory != GTRecipeCategory.DEFAULT && recipeCategory.getRecipeType() != recipeType) {
+                GTCEu.LOGGER.error(
+                        "Recipe (type '{}') '{}' cannot have the category '{}'. Category '{}' requires '{}' recipe type.",
+                        this.recipeType, this.id, this.recipeCategory.name, this.recipeCategory.name,
+                        this.recipeCategory.getRecipeType().registryName.getPath(), new IllegalArgumentException());
             }
         }
 
@@ -1655,6 +1696,9 @@ public class GTRecipeBuilder {
                                           boolean isInput,
                                           Map<RecipeCapability<?>, List<Content>> table,
                                           int addedEntries) {
+        // Layered recipes may exceed input sizes
+        if (this.data.contains("layered_info")) return;
+
         var recipeCapabilityMax = isInput ? recipeType.maxInputs : recipeType.maxOutputs;
         if (!recipeCapabilityMax.containsKey(capability)) return;
 

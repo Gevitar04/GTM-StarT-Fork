@@ -522,9 +522,26 @@ public class LangHandler {
         multilineLang(provider, "cover.advanced_detector.signal.disabled",
                 "Output Signal: Weak\n\n" + detectorOutputSignalDescription);
 
+        provider.add("cover.advanced_detector.ticks_per_cycle", "Ticks per Cycle");
+        provider.add("cover.advanced_detector.ticks_per_cycle.tooltip", "Delay between redstone updates");
+
+        provider.add("cover.layered_step_detector.label", "Layered Step Detector");
+        var layeredStepDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone is emitted when the machine is processing a layered recipe, and stops emitting when it is not processing any layered recipes";
+        multilineLang(provider, "cover.layered_step_detector.invert.enabled",
+                "Output: Inverted\n\n" + layeredStepDetectorInvertDescription);
+        multilineLang(provider, "cover.layered_step_detector.invert.disabled",
+                "Output: Normal\n\n" + layeredStepDetectorInvertDescription);
+
         provider.add("cover.advanced_energy_detector.label", "Advanced Energy Detector");
         provider.add("cover.advanced_energy_detector.min", "Min");
         provider.add("cover.advanced_energy_detector.max", "Max");
+
+        provider.add("cover.advanced_activity_detector.label", "Advanced Activity Detector");
+        var advancedActivityDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone is emitted when the machine is working, and stops emitting when it is idle";
+        multilineLang(provider, "cover.advanced_activity_detector.invert.enabled",
+                "Output: Inverted\n\n" + advancedActivityDetectorInvertDescription);
+        multilineLang(provider, "cover.advanced_activity_detector.invert.disabled",
+                "Output: Normal\n\n" + advancedActivityDetectorInvertDescription);
 
         var advancedEnergyDetectorInvertDescription = "Toggle to invert the redstone logic\nBy default, redstone is emitted when less than the minimum EU, and stops emitting when greater than the max EU";
         multilineLang(provider, "cover.advanced_energy_detector.invert.enabled",
@@ -947,6 +964,7 @@ public class LangHandler {
         provider.add("gtceu.recipe.eu.total", "%s EU/t");
         provider.add("gtceu.recipe.eu.amp_notation", "%s A @ %s");
         provider.add("gtceu.recipe.duration", "Duration: %s secs");
+        provider.add("gtceu.recipe.total_duration", "Total Duration: %s secs");
         provider.add("gtceu.recipe.voltage", "Voltage: %s V @ %s A");
         provider.add("gtceu.recipe.total_eu", "Total Usage: %s EU/t");
         provider.add("gtceu.recipe.not_consumed", "Does not get consumed in the process");
@@ -966,6 +984,7 @@ public class LangHandler {
         provider.add("gtceu.recipe.computation_per_tick", "Min. Computation: %s CWU/t");
         provider.add("gtceu.recipe.total_computation", "Computation: %s CWU");
         provider.add("gtceu.recipe.byproduct_tier", "Byproducts from %s§r+");
+        provider.add("gtceu.recipe.layered.step", "Step %s");
         provider.add("gtceu.fluid.click_to_fill",
                 "§7Click with a Fluid Container to §bfill §7the tank (Shift-click for a full stack).");
         provider.add("gtceu.fluid.click_combined",
@@ -1178,6 +1197,14 @@ public class LangHandler {
         provider.add("gtceu.multiblock.pattern.location_end", "§cVery End§r");
         provider.add("gtceu.multiblock.pattern.replaceable_air", "Replaceable by Air");
 
+        provider.add("gtceu.multiblock.layered.progress", "Total Progress: %ss / %ss (%s%%)");
+        provider.add("gtceu.multiblock.layered.step", "Current Step: %s/%s");
+        provider.add("gtceu.multiblock.layered.step_progress", "Step Progress: %ss / %ss (%s%%)");
+        provider.add("gtceu.multiblock.layered.recipe_contents_line", "%s x §e%s§r");
+        provider.add("gtceu.multiblock.layered.next_step_inputs", "Next Step Inputs:");
+        provider.add("gtceu.multiblock.layered.cancel", "Cancel");
+        provider.add("gtceu.multiblock.layered.final_step_outputs", "Final Step Outputs:");
+
         provider.add("gtceu.multiblock.computation.max", "Max CWU/t: %s");
         provider.add("gtceu.multiblock.computation.usage", "Using: %s");
         provider.add("gtceu.multiblock.computation.non_bridging", "Non-bridging connection found");
@@ -1237,6 +1264,7 @@ public class LangHandler {
         provider.add("config.jade.plugin_gtceu.recipe_logic_provider", "[GTCEu] Recipe Logic");
         provider.add("config.jade.plugin_gtceu.hazard_cleaner_provider", "[GTCEu] Hazard Cleaner");
         provider.add("config.jade.plugin_gtceu.recipe_output_info", "[GTCEu] Recipe Output Info");
+        provider.add("config.jade.plugin_gtceu.layered_recipe_info", "[GTCEu] Layered Recipe Info");
         provider.add("config.jade.plugin_gtceu.auto_output_info", "[GTCEu] Auto Output Info");
         provider.add("config.jade.plugin_gtceu.cable_info", "[GTCEu] Cable Info");
         provider.add("config.jade.plugin_gtceu.exhaust_vent_info", "[GTCEu] Exhaust Vent Info");

@@ -9,6 +9,7 @@ import com.gregtechceu.gtceu.api.cover.filter.FluidFilter;
 import com.gregtechceu.gtceu.api.gui.GuiTextures;
 import com.gregtechceu.gtceu.api.gui.widget.IntInputWidget;
 import com.gregtechceu.gtceu.api.gui.widget.ToggleButtonWidget;
+import com.gregtechceu.gtceu.config.ConfigHolder;
 
 import com.lowdragmc.lowdraglib.gui.widget.LabelWidget;
 import com.lowdragmc.lowdraglib.gui.widget.TextBoxWidget;
@@ -21,6 +22,7 @@ import com.lowdragmc.lowdraglib.utils.LocalizationUtils;
 
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.Direction;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.fluids.FluidStack;
@@ -50,6 +52,7 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
 
     private static final int DEFAULT_MIN = 64;
     private static final int DEFAULT_MAX = 512;
+
     @Persisted
     @Getter
     private int minValue, maxValue;
@@ -68,12 +71,17 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
     @Getter
     @Setter
     private boolean isStrongSignal;
+    @Persisted
+    @DescSynced
+    @Getter
+    private int ticksPerCycle;
 
     public AdvancedFluidDetectorCover(CoverDefinition definition, ICoverable coverHolder, Direction attachedSide) {
         super(definition, coverHolder, attachedSide);
 
         this.minValue = DEFAULT_MIN;
         this.maxValue = DEFAULT_MAX;
+        this.ticksPerCycle = ConfigHolder.INSTANCE.machines.coverDefaultTicksPerCycle;
 
         filterHandler = FilterHandlers.fluid(this);
     }
@@ -89,7 +97,7 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
 
     @Override
     protected void update() {
-        if (this.coverHolder.getOffsetTimer() % 20 != 0)
+        if (this.coverHolder.getOffsetTimer() % ticksPerCycle != 0)
             return;
 
         FluidFilter filter = filterHandler.getFilter();
@@ -130,13 +138,18 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
         this.maxValue = Math.max(maxValue, 0);
     }
 
+    public void setTicksPerCycle(int ticksPerCycle) {
+        this.ticksPerCycle = Mth.clamp(ticksPerCycle, ConfigHolder.INSTANCE.machines.coverMinTicksPerCycle,
+                ticksPerCycle);
+    }
+
     //////////////////////////////////////
     // *********** GUI ***********//
     //////////////////////////////////////
 
     @Override
     public Widget createUIWidget() {
-        WidgetGroup group = new WidgetGroup(0, 0, 176, 170);
+        WidgetGroup group = new WidgetGroup(0, 0, 176, 195);
         group.addWidget(new LabelWidget(10, 5, "cover.advanced_fluid_detector.label"));
 
         group.addWidget(new TextBoxWidget(10, 55, 65,
@@ -145,8 +158,14 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
         group.addWidget(new TextBoxWidget(10, 80, 65,
                 List.of(LocalizationUtils.format("cover.advanced_fluid_detector.max"))));
 
+        group.addWidget(new TextBoxWidget(10, 105, 65,
+                List.of(LocalizationUtils.format("cover.advanced_detector.ticks_per_cycle")))
+                .setHoverTooltips(Component.translatable("cover.advanced_detector.ticks_per_cycle.tooltip")));
+
         group.addWidget(new IntInputWidget(80, 50, 176 - 80 - 10, 20, this::getMinValue, this::setMinValue));
         group.addWidget(new IntInputWidget(80, 75, 176 - 80 - 10, 20, this::getMaxValue, this::setMaxValue));
+        group.addWidget(new IntInputWidget(80, 100, 176 - 80 - 10, 20, this::getTicksPerCycle, this::setTicksPerCycle)
+                .setMin(ConfigHolder.INSTANCE.machines.coverMinTicksPerCycle));
 
         // Invert Redstone Output Toggle:
         group.addWidget(new ToggleButtonWidget(
@@ -166,8 +185,8 @@ public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IU
                 .isMultiLang()
                 .setTooltipText("cover.advanced_detector.signal"));
 
-        group.addWidget(filterHandler.createFilterSlotUI(148, 100));
-        group.addWidget(filterHandler.createFilterConfigUI(10, 100, 156, 60));
+        group.addWidget(filterHandler.createFilterSlotUI(148, 125));
+        group.addWidget(filterHandler.createFilterConfigUI(10, 125, 156, 60));
 
         return group;
     }

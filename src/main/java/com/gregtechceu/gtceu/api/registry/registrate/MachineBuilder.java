@@ -20,6 +20,7 @@ import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifier;
 import com.gregtechceu.gtceu.api.recipe.modifier.RecipeModifierList;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
 import com.gregtechceu.gtceu.api.registry.registrate.provider.GTBlockstateProvider;
+import com.gregtechceu.gtceu.client.TooltipPageManager;
 import com.gregtechceu.gtceu.client.model.machine.MachineRenderState;
 import com.gregtechceu.gtceu.client.renderer.BlockEntityWithBERModelRenderer;
 import com.gregtechceu.gtceu.common.data.GTRecipeModifiers;
@@ -27,8 +28,11 @@ import com.gregtechceu.gtceu.common.data.GTRecipeTypes;
 import com.gregtechceu.gtceu.common.data.models.GTMachineModels;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.data.model.builder.MachineModelBuilder;
+import com.gregtechceu.gtceu.utils.input.SyncedKeyMappings;
 
+import net.minecraft.ChatFormatting;
 import net.minecraft.MethodsReturnNonnullByDefault;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
@@ -47,6 +51,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.client.model.generators.BlockModelBuilder;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.tterrag.registrate.AbstractRegistrate;
 import com.tterrag.registrate.builders.BlockBuilder;
 import com.tterrag.registrate.builders.ItemBuilder;
@@ -146,6 +151,8 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
             GTValues.VC[tier] : tintIndex == 1 ? paintingColor : -1);
     private PartAbility[] abilities = new PartAbility[0];
     private final List<Component> tooltips = new ArrayList<>();
+    private final List<List<Component>> paginatedTooltips = new ArrayList<>();
+    private final List<Component> bottomTooltips = new ArrayList<>();
     @Nullable
     @Setter
     private BiConsumer<ItemStack, List<Component>> tooltipBuilder;
@@ -396,6 +403,27 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         return this;
     }
 
+    @SafeVarargs
+    public final MachineBuilder<DEFINITION> paginatedTooltips(List<? extends Component>... pages) {
+        for (List<? extends Component> page : pages) {
+            if (page != null) {
+                paginatedTooltips.add(new ArrayList<>(page.stream().filter(Objects::nonNull).toList()));
+            }
+        }
+
+        return this;
+    }
+
+    public MachineBuilder<DEFINITION> bottomTooltips(@Nullable Component... components) {
+        return bottomTooltips(Arrays.asList(components));
+    }
+
+    public MachineBuilder<DEFINITION> bottomTooltips(List<? extends @Nullable Component> components) {
+        bottomTooltips.addAll(components.stream().filter(Objects::nonNull).toList());
+
+        return this;
+    }
+
     public MachineBuilder<DEFINITION> abilities(PartAbility... abilities) {
         this.abilities = abilities;
         return this;
@@ -572,6 +600,47 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         definition.setMachineSupplier(machine);
         definition.setTooltipBuilder((itemStack, components) -> {
             components.addAll(tooltips);
+
+            if (!paginatedTooltips.isEmpty()) {
+                ResourceLocation id = definition.getId();
+                long windowId = Minecraft.getInstance().getWindow().getWindow();
+                long currentTime = System.currentTimeMillis();
+                long lastChange = TooltipPageManager.getLastChangeTime(id);
+                boolean nextPressed = InputConstants.isKeyDown(windowId,
+                        SyncedKeyMappings.TOOLTIP_NEXT_PAGE.getKeyCode());
+                boolean prevPressed = InputConstants.isKeyDown(windowId,
+                        SyncedKeyMappings.TOOLTIP_PREV_PAGE.getKeyCode());
+                int currentPage = TooltipPageManager.getCurrentPage(id);
+                int maxPages = paginatedTooltips.size();
+
+                // This is needed, as SyncedKeyMapping.isKeyDown is not working for this
+                if ((nextPressed || prevPressed) && (currentTime - lastChange > 200)) {
+                    if (nextPressed && !prevPressed) {
+                        currentPage = (currentPage + 1) % maxPages;
+                    } else if (prevPressed && !nextPressed) {
+                        currentPage = currentPage == 0 ? maxPages - 1 : currentPage - 1;
+                    }
+                    TooltipPageManager.setCurrentPage(id, currentPage);
+                    TooltipPageManager.setLastChangeTime(id, currentTime);
+                }
+
+                TooltipPageManager.setCurrentPage(id, currentPage);
+
+                if (currentPage < paginatedTooltips.size()) {
+                    components.addAll(paginatedTooltips.get(currentPage));
+                }
+
+                components.add(Component.translatable("gtceu.paginated_tooltip",
+                        Component.literal("[" + SyncedKeyMappings.TOOLTIP_PREV_PAGE.getDisplayName() + "]")
+                                .withStyle(ChatFormatting.LIGHT_PURPLE),
+                        currentPage + 1, maxPages,
+                        Component.literal("[" + SyncedKeyMappings.TOOLTIP_NEXT_PAGE.getDisplayName() + "]")
+                                .withStyle(ChatFormatting.LIGHT_PURPLE))
+                        .withStyle(ChatFormatting.GRAY));
+            }
+
+            components.addAll(bottomTooltips);
+
             if (tooltipBuilder != null) tooltipBuilder.accept(itemStack, components);
         });
         definition.setRecipeModifier(recipeModifier);
@@ -582,6 +651,7 @@ public class MachineBuilder<DEFINITION extends MachineDefinition> extends Builde
         definition.setAfterWorking(this.afterWorking);
         definition.setRegressWhenWaiting(this.regressWhenWaiting);
         definition.setAllowCoverOnFront(this.allowCoverOnFront);
+        definition.setPaginatedTooltips(new ArrayList<>(paginatedTooltips));
 
         for (GTRecipeType type : recipeTypes) {
             if (type.getIconSupplier() == null) {

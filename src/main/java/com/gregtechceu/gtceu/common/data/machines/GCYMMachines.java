@@ -403,7 +403,7 @@ public class GCYMMachines {
             .langValue("Alloy Blast Smelter")
             .rotationState(RotationState.ALL)
             .recipeTypes(ALLOY_BLAST_RECIPES)
-            .recipeModifiers(GTRecipeModifiers.PARALLEL_HATCH, EBF_OVERCLOCK, BATCH_MODE)
+            .recipeModifiers(EBF_OVERCLOCK, BATCH_MODE)
             .appearanceBlock(CASING_HIGH_TEMPERATURE_SMELTING)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("#XXX#", "#CCC#", "#GGG#", "#CCC#", "#XXX#")

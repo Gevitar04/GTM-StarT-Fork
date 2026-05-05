@@ -173,8 +173,10 @@ public class GTRecipeModifiers {
         var oc = OverclockingLogic.NON_PERFECT_OVERCLOCK_SUBTICK.getModifier(machine, recipe,
                 coilMachine.getOverclockVoltage());
         if (coilMachine.getCoilTier() > 0) {
+            var tier = coilMachine.getCoilTier();
+            var discount = tier > 9 ? (0.9 + (tier - 9) * 0.025) : tier * 0.1;
             var coilModifier = ModifierFunction.builder()
-                    .eutMultiplier(1.0 - coilMachine.getCoilTier() * 0.1)
+                    .eutMultiplier(Math.max(0.0001, 1.0 - discount))
                     .build();
             oc = oc.andThen(coilModifier);
         }
@@ -300,7 +302,8 @@ public class GTRecipeModifiers {
         // apply subtick the overclocks after
         var recipeCopy2 = baseModifier.andThen(ocModifier).andThen(parallelModifier).apply(recipe);
         assert recipeCopy2 != null;
-        var ocSubtickModifier = NON_PERFECT_OVERCLOCK_SUBTICK.getModifier(machine, recipeCopy2, coilMachine.getOverclockVoltage());
+        var ocSubtickModifier = NON_PERFECT_OVERCLOCK_SUBTICK.getModifier(machine, recipeCopy2,
+                coilMachine.getOverclockVoltage());
         return baseModifier.andThen(ocModifier).andThen(parallelModifier).andThen(ocSubtickModifier);
     }
 

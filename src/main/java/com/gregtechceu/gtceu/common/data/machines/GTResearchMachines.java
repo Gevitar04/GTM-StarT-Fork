@@ -195,7 +195,7 @@ public class GTResearchMachines {
 
     public static final MachineDefinition HIGH_PERFORMANCE_COMPUTING_ARRAY = REGISTRATE
             .multiblock("high_performance_computation_array", HPCAMachine::new)
-            .langValue("High Performance Computation Array (HPCA)")
+            .langValue("High Performance Computation Array [HPCA]")
             .rotationState(RotationState.NON_Y_AXIS)
             // TODO : Make a controllerAppearanceBlock() so the controller CTM's to the correct casings - Also just a
             // good API addition for packdevs

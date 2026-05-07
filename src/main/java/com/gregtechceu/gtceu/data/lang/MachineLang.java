@@ -9,9 +9,9 @@ public class MachineLang {
 
     protected static void init(RegistrateLangProvider provider) {
         // Custom machine names
-        replace(provider, "block.gtceu.steam_large_turbine", "Large Steam Turbine");
-        replace(provider, "block.gtceu.gas_large_turbine", "Large Gas Turbine");
-        replace(provider, "block.gtceu.plasma_large_turbine", "Large Plasma Turbine");
+        // replace(provider, "block.gtceu.steam_large_turbine", "Large Steam Turbine");
+        // replace(provider, "block.gtceu.gas_large_turbine", "Large Gas Turbine");
+        // replace(provider, "block.gtceu.plasma_large_turbine", "Large Plasma Turbine");
 
         // Steam machines
         replace(provider, "block.gtceu.steam_solid_boiler.bronze", "Small Steam Solid Boiler");
@@ -1048,6 +1048,13 @@ public class MachineLang {
 
         provider.add("gtceu.modifier.consume_eu_to_start.name", "%sConsume EU to start:");
         provider.add("gtceu.modifier.consume_eu_to_start.description", "  §7Needs X EU to start the recipe.");
+
+        // Multis with Abbreviations
+        replace(provider, "block.gtceu.large_combustion_engine", "Large Combustion Engine [LCE]");
+        replace(provider, "block.gtceu.extreme_combustion_engine", "Extreme Combustion Engine [ECE]");
+        replace(provider, "block.gtceu.steam_large_turbine", "Large Steam Turbine [LST]");
+        replace(provider, "block.gtceu.gas_large_turbine", "Large Gas Turbine [LGT]");
+        replace(provider, "block.gtceu.plasma_large_turbine", "Large Plasma Turbine [LPT]");
     }
 
     public static void standardTooltips(RegistrateLangProvider provider, String root, String machine,

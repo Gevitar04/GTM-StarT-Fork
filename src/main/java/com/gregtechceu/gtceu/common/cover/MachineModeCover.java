@@ -100,7 +100,7 @@ public class MachineModeCover extends CoverBehavior {
                 machine.getRecipeLogic().markLastRecipeDirty();
 
                 this.selectedRecipeType = modeIndex;
-                
+
                 if (needUpdateTickSubs) {
                     machine.getRecipeLogic().updateTickSubscription();
                 }

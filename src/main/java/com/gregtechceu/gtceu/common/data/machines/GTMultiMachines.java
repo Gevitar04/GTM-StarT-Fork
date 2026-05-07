@@ -111,6 +111,7 @@ public class GTMultiMachines {
 
     public static final MultiblockMachineDefinition PRIMITIVE_BLAST_FURNACE = REGISTRATE
             .multiblock("primitive_blast_furnace", PrimitiveBlastFurnaceMachine::new)
+            .langValue("Primitive Blast Furnace [PBF]")
             .rotationState(RotationState.ALL)
             .recipeTypes(GTRecipeTypes.PRIMITIVE_BLAST_FURNACE_RECIPES)
             .model(createWorkableCasingMachineModel(GTCEu.id("block/casings/solid/machine_primitive_bricks"),
@@ -132,6 +133,7 @@ public class GTMultiMachines {
 
     public static final MultiblockMachineDefinition ELECTRIC_BLAST_FURNACE = REGISTRATE
             .multiblock("electric_blast_furnace", CoilWorkableElectricMultiblockMachine::new)
+            .langValue("Electric Blast Furnace [EBF]")
             .rotationState(RotationState.ALL)
             .recipeTypes(GTRecipeTypes.BLAST_RECIPES)
             .recipeModifiers(EBF_OVERCLOCK, BATCH_MODE)
@@ -192,6 +194,7 @@ public class GTMultiMachines {
             .multiblock("large_chemical_reactor",
                     ConfigHolder.INSTANCE.machines.lcrCoilBenefits ? CoilWorkableElectricMultiblockMachine::new :
                             WorkableElectricMultiblockMachine::new)
+            .langValue("Large Chemical Reactor [LCR]")
             .conditionalTooltip(defaultEnvironmentRequirement(),
                     ConfigHolder.INSTANCE.gameplay.environmentalHazards)
             .rotationState(RotationState.ALL)
@@ -267,6 +270,7 @@ public class GTMultiMachines {
                                     ConfigHolder.INSTANCE.machines.lcrCoilBenefits ?
                                             CoilWorkableElectricMultiblockMachine::new :
                                             WorkableElectricMultiblockMachine::new)
+                            .langValue("Extreme Chemical Reactor [ECR]")
                             .conditionalTooltip(defaultEnvironmentRequirement(),
                                     ConfigHolder.INSTANCE.gameplay.environmentalHazards)
                             .rotationState(RotationState.ALL)

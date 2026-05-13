@@ -65,7 +65,7 @@ This fork should be considered a separate project with its own design goals.
 - Energy converters now default to FE-to-EU mode
 - Re-added the sodium-to-sodium-hydroxide recipe and increased its duration
 - Increased duration of the formic acid recipe
-- Multismelter now subticks
+- Multi Smelter now subticks
 - Added batch mode to ABS
 - Changed recipes for ME Pattern Buffer and ME Pattern Buffer Proxy to not require renaming
 

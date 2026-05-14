@@ -103,7 +103,7 @@ public class InputSeparationTest {
         busHolder.inputBus2.getInventory().setStackInSlot(0, new ItemStack(Blocks.ACACIA_WOOD));
         helper.onEachTick(() -> {
             helper.assertTrue(busHolder.outputBus1.getInventory().getStackInSlot(0).isEmpty(),
-                "Crafting items in busses with no color succeeded but shouldn't have");
+                    "Crafting items in busses with no color succeeded but shouldn't have");
         });
         TestUtils.succeedAfterTest(helper);
     }
@@ -149,10 +149,10 @@ public class InputSeparationTest {
         busHolder.inputBus2.getInventory().setStackInSlot(0, new ItemStack(Blocks.ACACIA_WOOD));
         helper.succeedWhen(() -> {
             helper.assertTrue(
-                TestUtils.isItemStackEqual(busHolder.outputBus1.getInventory().getStackInSlot(0),
-                    new ItemStack(Blocks.STONE)),
-                "Crafting items in different busses with distinct failed, expected STONE but was " +
-                    busHolder.outputBus1.getInventory().getStackInSlot(0).getDisplayName());
+                    TestUtils.isItemStackEqual(busHolder.outputBus1.getInventory().getStackInSlot(0),
+                            new ItemStack(Blocks.STONE)),
+                    "Crafting items in different busses with distinct failed, expected STONE but was " +
+                            busHolder.outputBus1.getInventory().getStackInSlot(0).getDisplayName());
         });
     }
 

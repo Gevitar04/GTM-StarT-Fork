@@ -124,6 +124,10 @@ public class LayeredRecipeLogic extends RecipeLogic {
         suspendAfterFinish = prevSuspendAfterFinish;
 
         if (suspendAfterFinish) {
+            if (finishedLastStep) {
+                layeredRecipe = null;
+                layeredRecipeLayerIndex = -1;
+            }
             setStatus(Status.SUSPEND);
             return;
         }

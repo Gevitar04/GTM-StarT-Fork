@@ -19,7 +19,7 @@ public class ModifierLang {
 
         provider.add("gtceu.modifier.oc_non_perfect_subtick.name", "%sSubtick:");
         provider.add("gtceu.modifier.oc_non_perfect_subtick.description",
-                "  §7If the recipe time goes under 1 tick addtional overclocks are converted into parallels.");
+                "  §7If the recipe time goes under 1 tick additional overclocks are converted into parallels.");
 
         provider.add("gtceu.modifier.parallel_hatch.name", "%sParallel Hatch:");
         multiLang(provider, "gtceu.modifier.parallel_hatch.description",
@@ -51,8 +51,8 @@ public class ModifierLang {
 
         provider.add("gtceu.modifier.multi_smellter_parallel.name", "%sMulti Smelter Parallel:");
         multiLang(provider, "gtceu.modifier.multi_smellter_parallel.description",
-                "  §7Max parallels: §f32x§7 coil tier.",
-                "  §7Higher tiers increase speed and reduce energy use.");
+                "  §7Runs recipes in parallel based on the coils used.",
+                "  §7Higher tiers of coils increase speed and reduce energy use.");
 
         provider.add("gtceu.modifier.chemical_reactor_oc.name", "%sChemical Overclock:");
         multiLang(provider, "gtceu.modifier.chemical_reactor_oc.description",

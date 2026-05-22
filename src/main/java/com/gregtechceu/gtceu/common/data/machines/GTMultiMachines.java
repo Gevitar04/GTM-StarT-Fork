@@ -354,7 +354,7 @@ public class GTMultiMachines {
             .langValue("Pyrolyse Oven [PO]")
             .rotationState(RotationState.ALL)
             .recipeTypes(GTRecipeTypes.PYROLYSE_RECIPES)
-            .recipeModifiers(PYROLYZE_OVEN_OVERCLOCK, BATCH_MODE)
+            .recipeModifiers(PYROLYSE_OVEN_OVERCLOCK, BATCH_MODE)
             .appearanceBlock(MACHINE_CASING_ULV)
             .pattern(definition -> FactoryBlockPattern.start()
                     .aisle("XXX", "XXX", "XXX")

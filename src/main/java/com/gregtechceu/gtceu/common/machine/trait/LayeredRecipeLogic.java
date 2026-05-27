@@ -26,18 +26,14 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class LayeredRecipeLogic extends RecipeLogic {
 
     @Persisted
     @DescSynced
-    @Getter
     @NotNull
-    private List<GTRecipe> layeredRecipe = List.of();
+    private final List<GTRecipe> layeredRecipe = Collections.synchronizedList(new ArrayList<>());
 
     @Persisted
     @DescSynced
@@ -59,6 +55,24 @@ public class LayeredRecipeLogic extends RecipeLogic {
     @Override
     public ManagedFieldHolder getFieldHolder() {
         return MANAGED_FIELD_HOLDER;
+    }
+
+    public @Nullable GTRecipe getFirstLayer() {
+        if (layeredRecipe.isEmpty()) return null;
+        return layeredRecipe.get(0);
+    }
+
+    public @Nullable GTRecipe getLastLayer() {
+        if (layeredRecipe.isEmpty()) return null;
+        return layeredRecipe.get(layeredRecipe.size() - 1);
+    }
+
+    public int getLayeredRecipeSize() {
+        return layeredRecipe.size();
+    }
+
+    public @NotNull List<GTRecipe> getLayeredRecipe() {
+        return List.copyOf(layeredRecipe);
     }
 
     public @Nullable GTRecipe getCurrentLayer() {
@@ -113,7 +127,7 @@ public class LayeredRecipeLogic extends RecipeLogic {
         progress = 0;
         duration = 0;
         layeredRecipeLayerIndex = -1;
-        layeredRecipe = List.of();
+        layeredRecipe.clear();
         lastRecipe = null;
     }
 
@@ -121,7 +135,7 @@ public class LayeredRecipeLogic extends RecipeLogic {
     public void resetRecipeLogic() {
         super.resetRecipeLogic();
         layeredRecipeLayerIndex = -1;
-        layeredRecipe = List.of();
+        layeredRecipe.clear();
         lastOriginLayeredRecipe = null;
     }
 
@@ -135,7 +149,7 @@ public class LayeredRecipeLogic extends RecipeLogic {
             // we were doing a recipe layer
             layeredRecipeLayerIndex++;
             if (layeredRecipe.size() == layeredRecipeLayerIndex) {
-                layeredRecipe = List.of();
+                layeredRecipe.clear();
                 layeredRecipeLayerIndex = -1;
                 finishedLastStep = true;
             }
@@ -194,7 +208,7 @@ public class LayeredRecipeLogic extends RecipeLogic {
             return Collections.singleton(layeredRecipe.get(layeredRecipeLayerIndex)).iterator();
         }
         return machine.getRecipeType().searchRecipe(machine, r -> {
-            // TODO: maybe add support for running non layered recipes as well
+            // TODO: maybe add support for running non-layered recipes as well
             // ignore non-layered recipes
             if (!LayeredRecipeHelper.hasLayeredSteps(r)) return false;
             return matchRecipe(r).isSuccess();
@@ -205,12 +219,13 @@ public class LayeredRecipeLogic extends RecipeLogic {
     public void setupRecipe(GTRecipe recipe) {
         if (LayeredRecipeHelper.hasLayeredSteps(recipe)) {
             // we are starting a layered craft
-            layeredRecipe = Objects.requireNonNull(LayeredRecipeHelper.getLayeredSteps(recipe));
+            layeredRecipe.clear();
+            layeredRecipe.addAll(Objects.requireNonNull(LayeredRecipeHelper.getLayeredSteps(recipe)));
             layeredRecipeLayerIndex = 0;
             recipe = layeredRecipe.get(0);
         } else if (!recipe.data.getBoolean("is_layer")) {
             // non-layered recipe: should never happen
-            layeredRecipe = List.of();
+            layeredRecipe.clear();
             layeredRecipeLayerIndex = -1;
         }
         // otherwise we are just doing a subsequent layer

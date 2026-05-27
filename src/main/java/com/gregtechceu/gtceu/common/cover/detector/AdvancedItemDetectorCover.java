@@ -40,7 +40,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 public class AdvancedItemDetectorCover extends ItemDetectorCover implements IUICover {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            AdvancedItemDetectorCover.class, DetectorCover.MANAGED_FIELD_HOLDER);
+            AdvancedItemDetectorCover.class, ItemDetectorCover.MANAGED_FIELD_HOLDER);
 
     @Override
     public ManagedFieldHolder getFieldHolder() {

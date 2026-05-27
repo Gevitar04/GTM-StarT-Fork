@@ -41,7 +41,7 @@ import static com.gregtechceu.gtceu.utils.RedstoneUtil.computeLatchedRedstoneBet
 public class AdvancedEnergyDetectorCover extends EnergyDetectorCover implements IUICover {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            AdvancedEnergyDetectorCover.class, DetectorCover.MANAGED_FIELD_HOLDER);
+            AdvancedEnergyDetectorCover.class, EnergyDetectorCover.MANAGED_FIELD_HOLDER);
 
     @Override
     public ManagedFieldHolder getFieldHolder() {

@@ -518,7 +518,7 @@ public class MachineLang {
                 "Turns Logs into §aCharcoal§7 when §cignited§7.",
                 "Right Click with fire-starting items to start.",
                 "Pyrolysis occurs in up to a §b9x4x9§7 space beneath.",
-                "Logs must be not be exposed to §eAir§7!");
+                "Logs must not be exposed to §eAir§7!");
         multilineLang(provider, "gtceu.multiblock.charcoal_pile.description",
                 "Converts logs into Brittle Charcoal in a 9x4x9 area beneath it.\n\nThe floor of the pit must be made from bricks, and any ground-related block can be used for the walls and roof. No air can be inside the pit.\n\nLarger pits take more time to process logs, but are more efficient.");
 

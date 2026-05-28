@@ -43,7 +43,7 @@ import static com.gregtechceu.gtceu.utils.RedstoneUtil.computeRedstoneBetweenVal
 public class AdvancedFluidDetectorCover extends FluidDetectorCover implements IUICover {
 
     public static final ManagedFieldHolder MANAGED_FIELD_HOLDER = new ManagedFieldHolder(
-            AdvancedFluidDetectorCover.class, DetectorCover.MANAGED_FIELD_HOLDER);
+            AdvancedFluidDetectorCover.class, FluidDetectorCover.MANAGED_FIELD_HOLDER);
 
     @Override
     public ManagedFieldHolder getFieldHolder() {

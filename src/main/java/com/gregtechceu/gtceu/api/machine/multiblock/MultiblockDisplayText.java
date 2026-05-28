@@ -722,13 +722,13 @@ public class MultiblockDisplayText {
         }
 
         public Builder addLayeredSteps(LayeredRecipeLogic logic) {
-            var layers = logic.getLayeredRecipe();
+            var layers = logic.getLayeredRecipeSize();
             var step = logic.getLayeredRecipeLayerIndex();
-            if (!isStructureFormed || layers.isEmpty())
+            if (!isStructureFormed || layers == 0)
                 return this;
 
             textList.add(Component.literal(""));
-            textList.add(Component.translatable("gtceu.multiblock.layered.step", step + 1, layers.size()));
+            textList.add(Component.translatable("gtceu.multiblock.layered.step", step + 1, layers));
             return this;
         }
 
@@ -799,14 +799,13 @@ public class MultiblockDisplayText {
         }
 
         public Builder addLayeredFinalStepOutputs(LayeredRecipeLogic logic) {
-            var layers = logic.getLayeredRecipe();
-            if (!isStructureFormed || layers.isEmpty())
+            var recipe = logic.getLastLayer();
+            if (!isStructureFormed || recipe == null)
                 return this;
 
             textList.add(Component.literal(""));
             textList.add(Component.translatable("gtceu.multiblock.layered.final_step_outputs"));
 
-            var recipe = layers.get(layers.size() - 1);
             var itemOutputs = recipe.getOutputContents(ItemRecipeCapability.CAP);
             var fluidOutputs = recipe.getOutputContents(FluidRecipeCapability.CAP);
 

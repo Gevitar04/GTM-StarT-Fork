@@ -52,17 +52,19 @@ public class LayeredWorkableElectricMultiblockMachine extends WorkableElectricMu
         var totalRuns = 0;
         var exact = false;
 
+        var initialStep = logic.getFirstLayer();
+
         if (logic.isActive() && logic.getLastRecipe() != null) {
             numParallels = logic.getLastRecipe().parallels;
             subtickParallels = logic.getLastRecipe().subtickParallels;
             batchParallels = logic.getLastRecipe().batchParallels;
             totalRuns = logic.getLastRecipe().getTotalRuns();
             exact = true;
-        } else if (!logic.getLayeredRecipe().isEmpty()) {
-            numParallels = logic.getLayeredRecipe().get(0).parallels;
-            subtickParallels = logic.getLayeredRecipe().get(0).subtickParallels;
-            batchParallels = logic.getLayeredRecipe().get(0).batchParallels;
-            totalRuns = logic.getLayeredRecipe().get(0).getTotalRuns();
+        } else if (initialStep != null) {
+            numParallels = initialStep.parallels;
+            subtickParallels = initialStep.subtickParallels;
+            batchParallels = initialStep.batchParallels;
+            totalRuns = initialStep.getTotalRuns();
             exact = true;
         } else {
             numParallels = getParallelHatch().map(IParallelHatch::getCurrentParallel).orElse(0);

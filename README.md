@@ -70,13 +70,31 @@ This fork is based on the excellent work of the GregTech CEu: Modern development
 
 ## For Developers
 
-To add this fork as a dependency to your project, you have to use mavenlocal.
+To add this fork as a dependency to your project, first add it to your `build.gradle`:
 
-1. Fork and clone this repository locally
-2. After the gradle setup is finalized, run the `publishing/publishToMavenLocal` task
-3. In your project, make sure you have `mavenLocal()` added in your `build.gradle` `repositories` section
-4. Refresh the project, and the dependency should work
+```groovy
+repositories {
+    maven {
+        name = "expandiumReleases"
+        url = "https://repo.expandium.net/releases"
+        content {
+            includeGroup 'com.gregtechceu.gtceu'
+        }
+    }
+}
+```
 
+Then you can add it as a dependency, providing a `{gtm_version}` parameter for the version:
+
+```groovy
+dependencies {
+    modImplementation("com.gregtechceu.gtceu:gtceu-st-1.20.1:${gtm_version}") { transitive = false }
+}
+```
+
+## Contributing
+
+If you wish to contribute to this project, fork this repository and create a pull request pointing towards the `develop` branch.
 
 ### IDE Requirements (when using IntelliJ IDEA)
 
